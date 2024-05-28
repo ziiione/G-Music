@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:g_application/pages/getting_permission/permission_request.dart';
+import 'package:g_application/common/utils/app_color.dart';
+import 'package:permission_handler/permission_handler.dart';
   void permission_denied(BuildContext context) {
 
     showDialog(
@@ -7,12 +8,13 @@ import 'package:g_application/pages/getting_permission/permission_request.dart';
       builder: (context) {
         
         return AlertDialog(
+       
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
           
-          title: Text('We Strickly need your permission',
-              style: TextStyle(fontSize: 20, color: Colors.black)),
+          title: Text('Permission Denied', style: TextStyle(fontSize: 24, color: AppColors.primaryText)),
+             
           actions: [
             ElevatedButton(
               onPressed: () {
@@ -22,9 +24,10 @@ import 'package:g_application/pages/getting_permission/permission_request.dart';
             ),
             ElevatedButton(
               onPressed: () async {
-              await  requestPermission();              
+              openAppSettings();
+              Navigator.pop(context);             
               },
-              child: Text('Again Request Permission'),
+              child: Text('Request'),
             ),
           ],
         );

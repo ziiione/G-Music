@@ -62,7 +62,7 @@ Widget Terms_and_condition(){
                        child: Column(
                              children: [
                                Text(
-                                 'By creating an account, you agree to our Terms and Policy.',
+                                 'By granting the permissions, you agree to our Terms and Policy.',
                                  style: TextStyle(
                                    color: AppColors.primaryText,
                                    fontSize: 14,
