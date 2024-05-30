@@ -1,15 +1,16 @@
+// ignore_for_file: camel_case_types, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:g_application/common/utils/app_color.dart';
 import 'package:g_application/common/utils/botton_widget.dart';
 import 'package:g_application/common/utils/height_width.dart';
 import 'package:g_application/common/widget/text_widget.dart';
-import 'package:g_application/pages/Main_screen/audio.dart';
+import 'package:g_application/pages/Main_screen/home_screen.dart';
 import 'package:g_application/pages/getting_permission/permission_request.dart';
-import 'package:provider/provider.dart';
 import 'popup.dart';
 
 class permission_page extends StatelessWidget {
-  const permission_page({Key? key}) : super(key: key);
+  const permission_page({super.key});
   static const String routeName = '/permission_page';
 
   @override
@@ -55,7 +56,8 @@ class permission_page extends StatelessWidget {
             if (permissionGranted) {
               // Update AppState
               savePermissionStatus();
-              Navigator.pushNamed(context, Audio.routeName);
+              //load the audio songs in provider
+        Navigator.pushNamed(context, Home_page.routeName);
             }else{
               permission_denied(context);
             }

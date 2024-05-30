@@ -13,21 +13,21 @@ import 'package:permission_handler/permission_handler.dart';
             borderRadius: BorderRadius.circular(10),
           ),
           
-          title: Text('Permission Denied', style: TextStyle(fontSize: 24, color: AppColors.primaryText)),
+          title: const Text('Permission Denied', style: TextStyle(fontSize: 24, color: AppColors.primaryText)),
              
           actions: [
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             ElevatedButton(
               onPressed: () async {
               openAppSettings();
               Navigator.pop(context);             
               },
-              child: Text('Request'),
+              child: const Text('Request'),
             ),
           ],
         );

@@ -1,11 +1,16 @@
 // ignore_for_file: library_private_types_in_public_api
 import 'package:flutter/material.dart';
-import 'package:g_application/pages/getting_permission/permission.dart';
-import 'package:g_application/pages/welcome/page_provider/page_provider.dart';
-import 'package:g_application/pages/welcome/welcome.dart';
+import 'package:g_application/common/utils/screen/Equalizer.dart';
+import 'pages/Main_screen/Audio/screen/AudioPlay.dart';
+import './pages/getting_permission/permission.dart';
+import './pages/welcome/page_provider/page_provider.dart';
+import './pages/welcome/welcome.dart';
+import 'package:g_application/test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'pages/Main_screen/audio.dart';
+import 'common/Provider/SongProvider.dart';
+import 'common/Provider/app_ui_provider.dart';
+import 'pages/Main_screen/home_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,10 +50,13 @@ class _MyAppState extends State<MyApp> {
             providers: [
               ChangeNotifierProvider(
                 create: (_) => PageProvider(),
-              )
+              ),
+              ChangeNotifierProvider(create: (_) => Ui_changer()),
+              ChangeNotifierProvider(create: (_) => SongProvider()),
             ],
             child: MaterialApp(
               debugShowCheckedModeBanner: false,
+              home: EqualizerPage(),
               onGenerateRoute: (RouteSettings setting) {
                 switch (setting.name) {
                   case '/':
@@ -57,12 +65,19 @@ class _MyAppState extends State<MyApp> {
                     } else if (!_permissionGranted) {
                       return createRoute(const permission_page());
                     } else {
-                      return createRoute(const Audio());
+                      return createRoute(const Home_page());
+                     
                     }
                   case permission_page.routeName:
                     return createRoute(const permission_page());
-                  case Audio.routeName:
-                    return createRoute(const Audio());
+                  case Home_page.routeName:
+                    return createRoute(const Home_page());
+
+                  case Audioplay.routeName:
+                    return createRoute( Audioplay());
+
+                  case EqualizerPage.routeName:
+                    return createRoute( const EqualizerPage());  
                   default:
                     return createRoute(Welcome());
                 }
@@ -75,6 +90,7 @@ class _MyAppState extends State<MyApp> {
       },
     );
   }
+ 
 
   // Routing Animation
   PageRouteBuilder createRoute(Widget destination) {
