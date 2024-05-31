@@ -1,6 +1,7 @@
 // ignore_for_file: camel_case_types, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:g_application/common/Provider/playlistProvider.dart';
 import 'package:g_application/pages/Main_screen/Audio/screen/AudioPlay.dart';
 import '../../../../common/utils/bottomSheet.dart';
 import '/pages/getting_permission/permission.dart';
@@ -31,6 +32,7 @@ class _AudioPlayerState extends State<AudioPlayer> {
       if (status.isGranted) {
         await Provider.of<SongProvider>(context, listen: false)
             .storagePermission();
+    await     Provider.of<playlistProvider>(context, listen: false).loadPlaylist();   
         setState(() {});
       } else {
         //code to handle the permission denied case

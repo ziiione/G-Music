@@ -1,6 +1,9 @@
 // ignore_for_file: library_private_types_in_public_api
+import 'package:equalizer_flutter/equalizer_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:g_application/common/Provider/playlistProvider.dart';
 import 'package:g_application/common/utils/screen/Equalizer.dart';
+import 'package:g_application/pages/Main_screen/Playlist%20screen/PlaylistDetail.dart';
 import 'pages/Main_screen/Audio/screen/AudioPlay.dart';
 import './pages/getting_permission/permission.dart';
 import './pages/welcome/page_provider/page_provider.dart';
@@ -29,9 +32,16 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    EqualizerFlutter.init(0);
     _loadPreferences().then((_) {
       setState(() {});
     });
+  }
+
+ @override
+  void dispose() {
+    EqualizerFlutter.release();
+    super.dispose();
   }
 
   Future<void> _loadPreferences() async {
@@ -42,6 +52,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    
     return FutureBuilder(
       future: _loadPreferences(),
       builder: (context, snapshot) {
@@ -53,11 +64,13 @@ class _MyAppState extends State<MyApp> {
               ),
               ChangeNotifierProvider(create: (_) => Ui_changer()),
               ChangeNotifierProvider(create: (_) => SongProvider()),
+              ChangeNotifierProvider(create: (_)=>playlistProvider())
             ],
             child: MaterialApp(
               debugShowCheckedModeBanner: false,
-              home: EqualizerPage(),
-              onGenerateRoute: (RouteSettings setting) {
+               
+              // home: PlaylistDetails(),
+              onGenerateRoute: (RouteSettings setting ) {
                 switch (setting.name) {
                   case '/':
                     if (!_welcomePageShown) {
@@ -65,12 +78,15 @@ class _MyAppState extends State<MyApp> {
                     } else if (!_permissionGranted) {
                       return createRoute(const permission_page());
                     } else {
+                        
                       return createRoute(const Home_page());
+                      
                      
                     }
                   case permission_page.routeName:
                     return createRoute(const permission_page());
                   case Home_page.routeName:
+
                     return createRoute(const Home_page());
 
                   case Audioplay.routeName:
@@ -78,6 +94,11 @@ class _MyAppState extends State<MyApp> {
 
                   case EqualizerPage.routeName:
                     return createRoute( const EqualizerPage());  
+
+                    case PlaylistDetail.routeName:
+                           var args = setting.arguments as Map;
+                           var playlist = args['playlist'];
+                    return createRoute( PlaylistDetail( play: playlist,));
                   default:
                     return createRoute(Welcome());
                 }

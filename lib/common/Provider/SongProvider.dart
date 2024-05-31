@@ -235,7 +235,7 @@ class SongProvider extends ChangeNotifier {
   }
 
   /** ---------------------------------Song Loading------------------------------------------------------------- */
-  Future<void> Load_songs() async {
+  Future<void> Load_song() async {
     _songs = await audioQuery.querySongs(
       sortType: SongSortType.TITLE,
       orderType: OrderType.ASC_OR_SMALLER,
@@ -273,7 +273,7 @@ class SongProvider extends ChangeNotifier {
   Future<void> storagePermission() async {
     final status = await Permission.storage.request();
     if (status.isGranted) {
-      Load_songs();
+      Load_song();
     } else {
       SystemNavigator.pop();
     }

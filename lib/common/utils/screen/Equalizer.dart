@@ -6,7 +6,7 @@ import 'package:equalizer_flutter/equalizer_flutter.dart';
 
 class EqualizerPage extends StatefulWidget {
   const EqualizerPage({Key? key}) : super(key: key);
-static const String routeName = '/equalizer_page';
+  static const String routeName = '/equalizer_page';
   @override
   State<EqualizerPage> createState() => _EqualizerPageState();
 }
@@ -14,25 +14,22 @@ static const String routeName = '/equalizer_page';
 class _EqualizerPageState extends State<EqualizerPage> {
   bool enableCustomEQ = false;
 
-
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
-      
       body: Container(
-       color: Colors.black,
+        color: Colors.black.withOpacity(0.8),
         child: ListView(
           children: [
-            
-            
-            
             Container(
               color: Colors.grey.withOpacity(0.1),
               child: SwitchListTile(
-                activeColor:Colors.white,
+                activeColor: Colors.white,
                 inactiveTrackColor: Colors.grey,
-                title: Text('Custom Equalizer',style: TextStyle(color: Colors.white),),
+                title: Text(
+                  'Custom Equalizer',
+                  style: TextStyle(color: Colors.white),
+                ),
                 value: enableCustomEQ,
                 onChanged: (value) {
                   EqualizerFlutter.setEnabled(value);
@@ -63,19 +60,18 @@ class _EqualizerPageState extends State<EqualizerPage> {
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.8),
                   borderRadius: BorderRadius.circular(10),
-                
                 ),
                 child: Builder(
                   builder: (context) {
                     return InkWell(
                       child: Text(
                         'Choose Sound Technology',
-
-                        style: TextStyle(color: Colors.white,fontSize: 16,fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
                         textAlign: TextAlign.center,
                       ),
-                      
-                    
                       onTap: () async {
                         try {
                           await EqualizerFlutter.open(0);
@@ -93,7 +89,6 @@ class _EqualizerPageState extends State<EqualizerPage> {
               ),
             ),
             //speaker animation
-          
           ],
         ),
       ),
@@ -126,7 +121,6 @@ class _CustomEQState extends State<CustomEQ> {
 
   @override
   Widget build(BuildContext context) {
-  
     return FutureBuilder<List<int>>(
       future: EqualizerFlutter.getCenterBandFreqs(),
       builder: (context, snapshot) {
@@ -156,58 +150,62 @@ class _CustomEQState extends State<CustomEQ> {
     );
   }
 
-Widget _buildSliderBand(int freq, int bandId) {
-  
-  return Expanded(
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          height: MediaQuery.of(context).size.height * 0.31,
-          child: FutureBuilder<int>(
-            future: EqualizerFlutter.getBandLevel(bandId),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                var data = snapshot.data!.toDouble();
-                return RotatedBox(
-                  quarterTurns: 1,
-                  child: SliderTheme(
-                    data: SliderTheme.of(context).copyWith(
-                        trackHeight: 1, trackShape: SliderCustomTrackShape()),
-                    child: Center(
-                      child: Slider(
-                        activeColor: Colors.white,
-                        inactiveColor: Colors.grey,
-                        min: min,
-                        max: max,
-                        value: data,
-                        onChanged: widget.enabled // Check if custom equalizer is enabled
-                            ? (lowerValue) {
-                                setState(() {
-                                  EqualizerFlutter.setBandLevel(
-                                      bandId, lowerValue.toInt());
-                                });
-                              }
-                            : null, // If not enabled, do not change the slider value
+  Widget _buildSliderBand(int freq, int bandId) {
+    return Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            height: MediaQuery.of(context).size.height * 0.31,
+            child: FutureBuilder<int>(
+              future: EqualizerFlutter.getBandLevel(bandId),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  var data = snapshot.data!.toDouble();
+                  return RotatedBox(
+                    quarterTurns: 1,
+                    child: SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                          trackHeight: 1, trackShape: SliderCustomTrackShape(),
+                           thumbColor: widget.enabled ? Colors.white : Colors.white.withOpacity(0.5), // Change thumb color based on whether the custom equalizer is enabled or not
+                          ),
+
+                      child: Center(
+                        child: Slider(
+                          activeColor:  Colors.white
+                             ,
+                          inactiveColor: Colors.white
+                             ,
+                          min: min,
+                          max: max,
+                          value: data,
+                          onChanged: widget
+                                  .enabled // Check if custom equalizer is enabled
+                              ? (lowerValue) {
+                                  setState(() {
+                                    EqualizerFlutter.setBandLevel(
+                                        bandId, lowerValue.toInt());
+                                  });
+                                }
+                              : null, // If not enabled, do not change the slider value
+                        ),
                       ),
                     ),
-                  ),
-                );
-              } else {
-                return CircularProgressIndicator();
-              }
-            },
+                  );
+                } else {
+                  return CircularProgressIndicator();
+                }
+              },
+            ),
           ),
-        ),
-        Text('${freq ~/ 1000} Hz', style: TextStyle(color: Colors.white)),
-      ],
-    ),
-  );
-}
+          Text('${freq ~/ 1000} Hz', style: TextStyle(color: Colors.white)),
+        ],
+      ),
+    );
+  }
 
   Widget _buildPresets(BuildContext context) {
-    
     return FutureBuilder<List<String>>(
       future: fetchPresets,
       builder: (context, snapshot) {
@@ -215,9 +213,8 @@ Widget _buildSliderBand(int freq, int bandId) {
           final presets = snapshot.data;
           if (presets!.isEmpty) return Text('No presets available!');
           return DropdownButtonFormField(
-dropdownColor: Colors.white,
+            dropdownColor: Colors.black,
             decoration: InputDecoration(
-
               labelText: 'Available Presets',
               labelStyle: TextStyle(color: Colors.white),
               border: OutlineInputBorder(),
