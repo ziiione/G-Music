@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:g_application/common/Provider/playlistProvider.dart';
 
-import '../../../../common/Provider/SongProvider.dart';
-
-class slider_control extends StatelessWidget {
-  const slider_control({
+class SliderControlPlaylist extends StatelessWidget {
+  const SliderControlPlaylist({
     super.key,
     required this.provider,
   });
 
-  final SongProvider provider;
+  final playlistProvider provider;
 
   @override
   Widget build(BuildContext context) {

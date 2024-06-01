@@ -57,6 +57,9 @@ class _AudioPlayerState extends State<AudioPlayer> {
                     final real = provider.getSongs()[index];
                     return ListTile(
                       onTap: () {
+                        print('---------------------------------------------uri is pressed---------------------');
+                        print(real.uri);
+                         print('---------------------------------------------uri is pressed---------------------');
                         provider.stop_Song();
                         provider.play_song(real);
                         Navigator.pushNamed(context, Audioplay.routeName);

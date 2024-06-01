@@ -28,9 +28,12 @@ class _PlaylistDetailState extends State<PlaylistDetail> {
 
     super.initState();
      Future.delayed(const Duration(microseconds: 0), () async {
-      Provider.of<playlistProvider>(context).clear_song();
-   await  Provider.of<playlistProvider>(context).getSongsFromPlaylist( widget.play);
+      Provider.of<playlistProvider>(context,listen: false).clear_song();
+   await  Provider.of<playlistProvider>(context,listen: false).getSongsFromPlaylist( widget.play);
+ print('---------------------------------------------songs---------------------');
 
+List<SongModel> songs= Provider.of<playlistProvider>(context,listen: false).songs;
+print(songs);
     });
   }
   @override
@@ -149,14 +152,21 @@ class _PlaylistDetailState extends State<PlaylistDetail> {
                     SongModel song = snapshot.data![index];
                     return ListTile(
                       onTap: () {
+                        print('---------------------------------------------uri is pressed---------------------');
+                        print(song.uri);
+                         print('---------------------------------------------uri is pressed---------------------');
                        Vibration.vibrate();
                        providers.currentSong=song;
+                       providers.stop_Song();
+                      //  Provider.of<SongProvider>(context,listen: false).play_song(song);
+                       providers.play_song(song);
                        Navigator.pushNamed(context, PlaylistPlay.routeName ,arguments: { 'song': song});
                         
                       },
                       leading: QueryArtworkWidget(
                         id: song.albumId!,
                         type: ArtworkType.ALBUM,
+                        keepOldArtwork: true,
                         artworkFit: BoxFit.cover,
                               nullArtworkWidget:        ClipRRect(
                                       borderRadius: BorderRadius.circular(10),

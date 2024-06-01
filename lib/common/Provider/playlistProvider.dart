@@ -38,14 +38,24 @@ class playlistProvider extends ChangeNotifier {
   List<PlaylistModel> get playlists => _playlists.reversed.toList();
 
   List<SongModel> get songs => _songs;
+  String get currentTime => _currentTime;
+  String get totalTime => _totalTime;
+
 
 /**----------------------------------------playlist play control function--------------------------------- */
 
   //function to play the song
   void play_song(SongModel song) async {
     try {
+      print('--------------------going to play the song-------------------');
+      if (currentSong != null && currentSong!.id != song.id) {
+        await player.stop();
+      }
+      print(song.title);
+      print(song.album);
+      stop_Song();
       currentSong = song;
-      await player.setAudioSource(AudioSource.uri(Uri.parse(song.uri!)));
+      await player.setAudioSource(AudioSource.uri(Uri.parse(song.data)));
       player.play();
       _isPlayingNotifier.value = true;
 
@@ -96,24 +106,34 @@ class playlistProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  //function to play the next song
   void next_song(SongModel song) async {
-    if(is_shuffling){
-      
+     if(is_shuffling){
       final random = Random().nextInt(_songs.length-1);
-      play_song(_songs[random]);
-      
-    }else{
-      final index = _songs.indexOf(song);
+      play_song(_songs[random]);}else{
+  print(_songs);
+    int index=-1;
+    for(int i=0;i<_songs.length;i++){
+      if((song.albumId==_songs[i].albumId)&&(song.id==_songs[i].id)&&(song.title==_songs[i].title)){
+        index=i;
+        break;
+      }
+    }
+  
+  print(song.data);
+  
+  print('doing the next song');
+  if (index!=-1&& (index<_songs.length)) { // Check if the index is within the valid range
+   
+    play_song(_songs[(index + 1) % (_songs.length)]);
 
-    if (index == _songs.length - 1) {
-      play_song(_songs[0]);
-    } else {
-      play_song(_songs[index + 1]);
-    }
-    }
+  }else{
     
+    play_song(_songs[0]);
+    print('not playing the song');
   }
+      }
+  
+}
 
   //function to play the previous song
   void previous_song(SongModel song) async {
@@ -121,7 +141,14 @@ class playlistProvider extends ChangeNotifier {
       final random = Random().nextInt(_songs.length-1);
       play_song(_songs[random]);}
     else{
-    final index = _songs.indexOf(song);
+          int index=-1;
+    for(int i=0;i<_songs.length;i++){
+      if((song.albumId==_songs[i].albumId)&&(song.id==_songs[i].id)&&(song.title==_songs[i].title)){
+        index=i;
+        break;
+      }
+    }
+    
     if (index == 0) {
       play_song(_songs[_songs.length - 1]);
     } else {
@@ -225,9 +252,9 @@ class playlistProvider extends ChangeNotifier {
   Future<List<SongModel>> getSongsFromPlaylist(PlaylistModel play) async {
     try {    
 
-   List<SongModel> songs=await audioQuery.queryAudiosFrom(AudiosFromType.PLAYLIST, play.playlist,sortType: SongSortType.DATE_ADDED,orderType: OrderType.ASC_OR_SMALLER);
-  _songs=songs;
-    return [...songs];
+    _songs=await audioQuery.queryAudiosFrom(AudiosFromType.PLAYLIST, play.playlist,sortType: SongSortType.DATE_ADDED,orderType: OrderType.ASC_OR_SMALLER);
+  
+    return [..._songs];
     } catch (e) {
       print(e);
       print('Failed to get songs from playlist: $e');
@@ -301,6 +328,7 @@ Future<void> addSongToPlaylist(String playlistname, SongModel song) async {
   //function to delete songmodel from the playlist
   Future<void> deleteSongFromPlaylist(String playlistname, SongModel song) async {
     try {
+      
       if (_playlists.any((element) => element.playlist == playlistname)) {
         var playlist = _playlists.firstWhere((element) => element.playlist == playlistname);
         List<SongModel> songsInPlaylist = await getSongsFromPlaylist(playlist);
@@ -308,6 +336,8 @@ Future<void> addSongToPlaylist(String playlistname, SongModel song) async {
         if (songsInPlaylist.any((s) => s.id == song.id)) {
           await audioQuery.removeFromPlaylist(playlist.id, song.id);
           _playlists = await audioQuery.queryPlaylists();
+
+          _songs.removeWhere((element) => (element.id == song.id) && (element.albumId == song.albumId) && (element.title == song.title) && (element.artist == song.artist) && (element.data == song.data) && (element.duration == song.duration) && (element.album == song.album));
           notifyListeners();
         } else {
           print('Song does not exist in playlist');

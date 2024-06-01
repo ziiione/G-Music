@@ -6,22 +6,18 @@ import 'package:g_application/common/Provider/playlistProvider.dart';
 import 'package:g_application/common/utils/app_color.dart';
 import 'package:g_application/common/widget/text_widget.dart';
 import 'package:g_application/pages/Main_screen/home_screen.dart';
+import 'package:g_application/pages/Main_screen/playlist/widget/TimePlayValuePlaylist.dart';
 import 'package:g_application/pages/Main_screen/playlist/widget/icon_row_playlist.dart';
+import 'package:g_application/pages/Main_screen/playlist/widget/pause_next_loop_suffle_playlist.dart';
 import 'package:g_application/pages/Main_screen/playlist/widget/sfradialgauge.dart';
+import 'package:g_application/pages/Main_screen/playlist/widget/sliderControlPlaylist.dart';
 import 'package:glossy/glossy.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:siri_wave/siri_wave.dart';
 import '../../../../../common/utils/bottomSheet.dart';
 import '../../../../../common/utils/height_width.dart';
-import '../../Audio/widget/animation_control.dart';
-import '../../Audio/widget/icon_row.dart';
-import '../../Audio/widget/pause_next_loop_suffle.dart';
-import '../../Audio/widget/sfradialGauge.dart';
-import '../../Audio/widget/slider_control.dart';
-import '../../Audio/widget/time_play.dart';
 import '../widget/animation_control_playlist.dart';
-import '/common/Provider/SongProvider.dart';
 import 'package:provider/provider.dart';
 
 
@@ -213,9 +209,9 @@ class PlaylistPlay extends StatelessWidget {
                           height: MediaQuery.of(context).size.height * 0.02,
                         ),
                          IconRowPlaylist( song: provider.currentSong!,),
-                        // slider_control(provider: provider),
-                        // time_play_value(provider: provider),
-                        // const pause_next_loop_suffle(),
+                        SliderControlPlaylist(provider: provider),
+                        TimePlayValuePlaylist(provider: provider),
+                        const PauseNextLoopSufflePlaylist()
                       ],
                     ),
                   ],
