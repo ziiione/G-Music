@@ -3,7 +3,8 @@ import 'package:equalizer_flutter/equalizer_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:g_application/common/Provider/playlistProvider.dart';
 import 'package:g_application/common/utils/screen/Equalizer.dart';
-import 'package:g_application/pages/Main_screen/Playlist%20screen/PlaylistDetail.dart';
+import 'package:g_application/pages/Main_screen/playlist/screens/PlaylistDetail.dart';
+import 'package:g_application/pages/Main_screen/playlist/screens/playlistPlay.dart';
 import 'pages/Main_screen/Audio/screen/AudioPlay.dart';
 import './pages/getting_permission/permission.dart';
 import './pages/welcome/page_provider/page_provider.dart';
@@ -17,7 +18,16 @@ import 'pages/Main_screen/home_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MyApp());
+  runApp(MultiProvider(
+    providers: [
+              ChangeNotifierProvider(
+                create: (_) => PageProvider(),
+              ),
+              ChangeNotifierProvider(create: (_) => Ui_changer()),
+              ChangeNotifierProvider(create: (_) => SongProvider()),
+              ChangeNotifierProvider(create: (_)=>playlistProvider())
+            ],
+    child: MyApp()));
 }
 
 class MyApp extends StatefulWidget {
@@ -33,9 +43,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     EqualizerFlutter.init(0);
-    _loadPreferences().then((_) {
-      setState(() {});
-    });
+   Provider.of<playlistProvider>(context, listen: false).loadPlaylist();  
   }
 
  @override
@@ -44,74 +52,114 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
   }
 
-  Future<void> _loadPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    _welcomePageShown = prefs.getBool('welcomePageShown') ?? false;
-    _permissionGranted = prefs.getBool('permissionGranted') ?? false;
-  }
+  // Future<void> _loadPreferences() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   _welcomePageShown = prefs.getBool('welcomePageShown') ?? false;
+  //   _permissionGranted = prefs.getBool('permissionGranted') ?? false;
+  // }
 
   @override
   Widget build(BuildContext context) {
     
-    return FutureBuilder(
-      future: _loadPreferences(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return MultiProvider(
-            providers: [
-              ChangeNotifierProvider(
-                create: (_) => PageProvider(),
-              ),
-              ChangeNotifierProvider(create: (_) => Ui_changer()),
-              ChangeNotifierProvider(create: (_) => SongProvider()),
-              ChangeNotifierProvider(create: (_)=>playlistProvider())
-            ],
-            child: MaterialApp(
-              debugShowCheckedModeBanner: false,
-               
-              // home: PlaylistDetails(),
-              onGenerateRoute: (RouteSettings setting ) {
-                switch (setting.name) {
-                  case '/':
-                    if (!_welcomePageShown) {
-                      return createRoute(Welcome());
-                    } else if (!_permissionGranted) {
-                      return createRoute(const permission_page());
-                    } else {
-                        
-                      return createRoute(const Home_page());
+  //   return FutureBuilder(
+  //     future: _loadPreferences(),
+  //     builder: (context, snapshot) {
+  //       if (snapshot.connectionState == ConnectionState.done) {
+  //         return MaterialApp(
+  //           debugShowCheckedModeBanner: false,
+             
+  //           // home: PlaylistDetails(),
+  //           onGenerateRoute: (RouteSettings setting ) {
+  //             switch (setting.name) {
+  //               case '/':
+  //                 if (!_welcomePageShown) {
+  //                   return createRoute(Welcome());
+  //                 } else if (!_permissionGranted) {
+  //                   return createRoute(const permission_page());
+  //                 } else {
                       
-                     
-                    }
-                  case permission_page.routeName:
-                    return createRoute(const permission_page());
-                  case Home_page.routeName:
-
-                    return createRoute(const Home_page());
-
-                  case Audioplay.routeName:
-                    return createRoute( Audioplay());
-
-                  case EqualizerPage.routeName:
-                    return createRoute( const EqualizerPage());  
-
-                    case PlaylistDetail.routeName:
-                           var args = setting.arguments as Map;
-                           var playlist = args['playlist'];
-                    return createRoute( PlaylistDetail( play: playlist,));
-                  default:
-                    return createRoute(Welcome());
-                }
-              },
-            ),
-          );
-        } else {
-          return const CircularProgressIndicator(); // Show a loading spinner while waiting
-        }
-      },
-    );
-  }
+  //                   return createRoute(const Home_page());
+                    
+                   
+  //                 }
+               
+                  
+  //               case permission_page.routeName:
+  //                 return createRoute(const permission_page());
+  //               case Home_page.routeName:
+          
+  //                 return createRoute(const Home_page());
+          
+  //               case Audioplay.routeName:
+  //                 return createRoute( Audioplay());
+          
+  //               case EqualizerPage.routeName:
+  //                 return createRoute( const EqualizerPage());  
+          
+  //                 case PlaylistDetail.routeName:
+  //                        var args = setting.arguments as Map;
+  //                        var playlist = args['playlist'];
+  //                 return createRoute( PlaylistDetail( play: playlist,));
+  //               default:
+  //                 return createRoute(Welcome());
+  //             }
+  //           },
+  //         );
+  //       } else {
+  //         return const CircularProgressIndicator(); // Show a loading spinner while waiting
+  //       }
+  //     },
+  //   );
+  // }
  
+
+return MaterialApp(
+            debugShowCheckedModeBanner: false,
+             
+            // home: PlaylistDetails(),
+            onGenerateRoute: (RouteSettings setting ) {
+              switch (setting.name) {
+                case '/':
+                  if (!_welcomePageShown) {
+                    return createRoute(Welcome());
+                  } else if (!_permissionGranted) {
+                    return createRoute(const permission_page());
+                  } else {
+                      
+                    return createRoute(const Home_page());
+                    
+                   
+                  }
+               
+                  
+                case permission_page.routeName:
+                  return createRoute(const permission_page());
+                case Home_page.routeName:
+          
+                  return createRoute(const Home_page());
+          
+                case Audioplay.routeName:
+                  return createRoute( Audioplay());
+          
+                case EqualizerPage.routeName:
+                  return createRoute( const EqualizerPage());  
+          
+                  case PlaylistDetail.routeName:
+                         var args = setting.arguments as Map;
+                         var playlist = args['playlist'];
+                  return createRoute( PlaylistDetail( play: playlist,));
+
+                  case   PlaylistPlay.routeName:
+                          var args = setting.arguments as Map;
+                          
+                          var song = args['song'];
+                        return createRoute( PlaylistPlay( song: song,));
+                default:
+                  return createRoute(Welcome());
+              }
+            },
+          );
+  }
 
   // Routing Animation
   PageRouteBuilder createRoute(Widget destination) {

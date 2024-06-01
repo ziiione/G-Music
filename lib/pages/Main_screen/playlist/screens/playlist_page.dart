@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:g_application/pages/Main_screen/Playlist%20screen/PlaylistDetail.dart';
-import '/pages/Main_screen/Playlist%20screen/widget.dart';
+import 'package:g_application/pages/Main_screen/playlist/screens/PlaylistDetail.dart';
+import '../widget/widget.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
 
-import '../../../common/Provider/playlistProvider.dart';
-import 'popupmenu.dart';
+import '../../../../common/Provider/playlistProvider.dart';
+import '../popupmenu.dart';
 
 class PlaylistPage extends StatelessWidget {
   const PlaylistPage({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return  Consumer<playlistProvider>(
-            builder: (context, provider, child) {
-              return Column(
+      final provider=Provider.of<playlistProvider>(context);
+    return   Column(
                 children: [
                   ListTile(
                     title: Text(
@@ -53,17 +51,19 @@ class PlaylistPage extends StatelessWidget {
                             },
                             leading: QueryArtworkWidget(
                                 quality: 100,
-                                artworkBorder: BorderRadius.circular(20),
+                                artworkBorder: BorderRadius.circular(100),
                                 artworkClipBehavior: Clip.antiAliasWithSaveLayer,
                                 artworkFit: BoxFit.cover,
+                                keepOldArtwork: true,
                                 nullArtworkWidget: ClipRRect(
-                                  borderRadius: BorderRadius.circular(50),
-                                  child: Image.asset('assets/images/cover.jpg'),
+                                  borderRadius: BorderRadius.circular(100),
+                                  child: Image.asset('assets/images/music_symbol1.png'),
                                 ),
                                 id: item.id,
                                 type: ArtworkType.PLAYLIST),
                             title: Text(
                               item.playlist,
+                              maxLines: 1,
                               style: const TextStyle(color: Colors.white),
                             ),
                             subtitle: Text(
@@ -71,6 +71,7 @@ class PlaylistPage extends StatelessWidget {
                               style: const TextStyle(color: Colors.grey),
                             ),
                             trailing: PopupMenuBottom(
+                              playlistModel: item,
                               playlistName: item.playlist,
                             ),
                           );
@@ -81,7 +82,6 @@ class PlaylistPage extends StatelessWidget {
                   // PlayerHome()
                 ],
               );
-            },
-          );
+            
   }
 }

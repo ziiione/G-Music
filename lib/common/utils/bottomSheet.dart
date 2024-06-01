@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:g_application/common/Provider/SongProvider.dart';
+import 'package:g_application/common/Provider/playlistProvider.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
 
@@ -18,7 +19,7 @@ void buttomsheet(
         return Container(
           decoration: BoxDecoration(
               gradient: LinearGradient(colors: [
-                Colors.black.withOpacity(0.8),
+                Colors.black,
                 Colors.black.withOpacity(0.9)
               ], begin: Alignment.topLeft, end: Alignment.bottomRight),
               borderRadius: const BorderRadius.only(
@@ -184,7 +185,7 @@ void buttomsheet(
  
   // function to show the modalbottom sheet for adding item in the playlist
   void playlist_bottom_sheet(context,SongModel song) {
-  
+  final provider=Provider.of<playlistProvider>(context,listen: false);
 
     showModalBottomSheet(
         context: context,
@@ -193,7 +194,7 @@ void buttomsheet(
           return Container(
             decoration: BoxDecoration(
                 gradient: LinearGradient(
-                    colors: [Colors.black.withOpacity(0.8), Colors.black.withOpacity(0.9)],
+                    colors: [Colors.black, Colors.black.withOpacity(0.9)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight),
                 borderRadius: const BorderRadius.only(
@@ -239,14 +240,15 @@ void buttomsheet(
                     ),
                     title: const Text(
                       'Create new playlist',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),
                     ),
                   ),
                   Expanded(
                     child: ListView.builder(
                       // itemCount: playlist.playlists.length,
-                      itemCount: 50,
+                      itemCount: provider.playlists.length,
                       itemBuilder: (context, index) {
+                        final playlist = provider.playlists[index];
                         return Container(
                           margin: const EdgeInsets.only(left: 12),
                           child: ListTile(
@@ -256,15 +258,26 @@ void buttomsheet(
                               //     Provider.of<SongProvier>(context,
                               //             listen: false)
                               //         .currentSong);
+                              provider.addSongToPlaylist(playlist.playlist, song);
                               Navigator.pop(context);
                             },
-                            leading: SvgPicture.asset(
-                              'assets/icons/heart.svg',
-                              width: 25,
+                            leading: Container(
+                              width: 40,
+                              height: 40,
+                              child: QueryArtworkWidget(
+                                  quality: 100,
+                                  artworkBorder: BorderRadius.circular(30),
+                                  artworkClipBehavior: Clip.antiAliasWithSaveLayer,
+                                  artworkFit: BoxFit.cover,
+                                  nullArtworkWidget: ClipRRect(
+                                    borderRadius: BorderRadius.circular(100),
+                                    child: Image.asset('assets/images/cover.jpg'),
+                                  ), id: playlist.id, type: ArtworkType.PLAYLIST,),
                             ),
-                            title: const Text(
+                            title:  Text(
                               // playlist.playlists[index].playlist,
-                              'playlist',
+                              playlist.playlist,
+                              maxLines: 1,
                               style: TextStyle(color: Colors.white),
                             ),
                           ),

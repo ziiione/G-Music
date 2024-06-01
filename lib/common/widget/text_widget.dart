@@ -37,7 +37,7 @@ Widget text14Normal({
   );
 }
 
-Widget text11Bold({
+Widget text11Bold( {
   String text = '',
   Color color = AppColors.primarySecondaryElementText,
 }) {

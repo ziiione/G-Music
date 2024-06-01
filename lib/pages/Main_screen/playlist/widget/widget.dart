@@ -2,8 +2,8 @@
   import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../common/Provider/SongProvider.dart';
-import '../../../common/Provider/playlistProvider.dart';
+import '../../../../common/Provider/SongProvider.dart';
+import '../../../../common/Provider/playlistProvider.dart';
 
 void PlaylistPopup(BuildContext context) {
     TextEditingController controller = TextEditingController();
@@ -91,7 +91,7 @@ ListTile buildStaticListTile(int index, BuildContext context) {
       title = 'Recently Played';
       icon = Icons.playlist_add;
      subtitle = FutureBuilder<int?>(
-  future: Provider.of<SongProvider>(context).getRowCount(),
+  future: Provider.of<SongProvider>(context,listen: false).getRowCount(),
   builder: (BuildContext context,AsyncSnapshot<int?> snapshot) {
     if (snapshot.connectionState == ConnectionState.waiting) {
       return const CircularProgressIndicator();

@@ -22,11 +22,7 @@ class album_image extends StatelessWidget {
       artworkClipBehavior: Clip.antiAliasWithSaveLayer,
       keepOldArtwork: true,
       artworkFit: BoxFit.cover,
-      nullArtworkWidget: const CircleAvatar(
-        radius: 23,
-        child: Icon(Icons.music_note,
-            color: Colors.white, size: 40),
-      ),
+      nullArtworkWidget: Image.asset('assets/images/music_symbol.png'),
       id: id,
       type: type,
     );
@@ -60,7 +56,7 @@ class NewWidget extends StatelessWidget {
           artworkFit: BoxFit.cover,
           nullArtworkWidget: ClipRRect(
             borderRadius: BorderRadius.circular(200),
-            child: Image.asset('assets/images/cover.jpg', fit: BoxFit.cover),
+            child: Image.asset('assets/images/music_symbol.png', fit: BoxFit.cover),
           ),
           id: provider.currentSong!.albumId!,
           keepOldArtwork: true,

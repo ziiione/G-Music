@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:g_application/pages/Main_screen/Audio/screen/AudioPage.dart';
-import 'package:g_application/pages/Main_screen/Playlist%20screen/playlist_page.dart';
+import 'package:g_application/pages/Main_screen/playlist/screens/playlist_page.dart';
 import '/pages/Main_screen/home_screen/widget/appbar_builder.dart';
 
 class Home_page extends StatefulWidget {
