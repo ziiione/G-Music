@@ -42,6 +42,13 @@ class playlistProvider extends ChangeNotifier {
   String get totalTime => _totalTime;
 
 
+playlistProvider() {
+  player.playerStateStream.listen((state) {
+    if (state.processingState == ProcessingState.completed) {
+      next_song(currentSong!);
+    }
+  });
+}
 /**----------------------------------------playlist play control function--------------------------------- */
 
   //function to play the song
@@ -67,13 +74,6 @@ class playlistProvider extends ChangeNotifier {
       };
       await databasehelper.insert(row);
       update_time();
-
-      player.playerStateStream.listen((state) {
-        if (state.processingState == ProcessingState.completed) {
-          next_song(song);
-        }
-      });
-
       _isplaying = true;
       notifyListeners();
     } catch (e) {
@@ -157,14 +157,22 @@ class playlistProvider extends ChangeNotifier {
   }
 
   //function to rewind 10 seconds
-  void rewind() async {
+ void rewind() async {
+  if (player.position <= const Duration(seconds: 10)) {
+    await player.seek(Duration.zero);
+  } else {
     await player.seek(player.position - const Duration(seconds: 10));
   }
-
+}
   //function to fast forward 10 seconds
   void fast_forward() async {
-    await player.seek(player.position + const Duration(seconds: 10));
+  Duration newPosition = player.position + const Duration(seconds: 10);
+  if (newPosition >= player.duration!) {
+    await player.seek(player.duration);
+  } else {
+    await player.seek(newPosition);
   }
+}
 /**--------------------------song volume control ---------------------------------------------------- */
   //function to change the volume of the song
   void change_volume(double newVolume) async {

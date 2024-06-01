@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:g_application/common/Provider/playlistProvider.dart';
 import 'package:g_application/common/utils/height_width.dart';
+import 'package:g_application/common/widget/text_widget.dart';
 import 'package:g_application/pages/Main_screen/playlist/screens/playlistPlay.dart';
 import 'package:glossy/glossy.dart';
 import 'package:on_audio_query/on_audio_query.dart';
@@ -20,7 +21,7 @@ class PlaylistDetail extends StatefulWidget {
 
 class _PlaylistDetailState extends State<PlaylistDetail> {
     final OnAudioQuery audioQuery = OnAudioQuery();
-
+List<SongModel> _songs = [];
 @override
   void initState() {
     // TODO: implement initState
@@ -31,14 +32,18 @@ class _PlaylistDetailState extends State<PlaylistDetail> {
       Provider.of<playlistProvider>(context,listen: false).clear_song();
    await  Provider.of<playlistProvider>(context,listen: false).getSongsFromPlaylist( widget.play);
  print('---------------------------------------------songs---------------------');
-
+ _fetchSongs();
 List<SongModel> songs= Provider.of<playlistProvider>(context,listen: false).songs;
 print(songs);
     });
   }
+  void _fetchSongs() async {
+  _songs = await audioQuery.queryAudiosFrom(AudiosFromType.PLAYLIST, widget.play.playlist, sortType: SongSortType.DATE_ADDED, orderType: OrderType.ASC_OR_SMALLER);
+  setState(() {});
+}
   @override
   Widget build(BuildContext context) {
-  
+  final provider = Provider.of<playlistProvider>(context,listen: false);
      return Scaffold( 
 
       body:Container(
@@ -108,7 +113,9 @@ print(songs);
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                   Text(widget.play.numOfSongs.toString(),style: TextStyle(color: Colors.white.withOpacity(0.7),fontSize: 12,),),
+                
+
+                  Text(_songs.length.toString(),style: TextStyle(color: Colors.white,),),
                           
                        
                     const Icon( Icons.shuffle,color: Colors.white,),
@@ -136,30 +143,22 @@ print(songs);
               maxLines:1,style:TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.normal),),
             ),
             Expanded(child: Consumer<playlistProvider>(
-              builder: (context,providers,child) {
-                return FutureBuilder<List<SongModel>>(
-                        future: audioQuery.queryAudiosFrom(AudiosFromType.PLAYLIST, widget.play.playlist,sortType: SongSortType.DATE_ADDED,orderType: OrderType.ASC_OR_SMALLER),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-                          } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-                          } else {
-                return ListView.builder(
+              builder: (context,providerss,child) {
+                return  ListView.builder(
                   physics:const BouncingScrollPhysics(),
-                  itemCount: snapshot.data?.length ?? 0,
+                  itemCount: _songs.length ,
                   itemBuilder: (context, index) {
-                    SongModel song = snapshot.data![index];
+                    SongModel song = _songs[index];
                     return ListTile(
                       onTap: () {
                         print('---------------------------------------------uri is pressed---------------------');
                         print(song.uri);
                          print('---------------------------------------------uri is pressed---------------------');
                        Vibration.vibrate();
-                       providers.currentSong=song;
-                       providers.stop_Song();
+                      
+                       providerss.stop_Song();
                       //  Provider.of<SongProvider>(context,listen: false).play_song(song);
-                       providers.play_song(song);
+                       providerss.play_song(song);
                        Navigator.pushNamed(context, PlaylistPlay.routeName ,arguments: { 'song': song});
                         
                       },
@@ -179,22 +178,27 @@ print(songs);
                         style: const TextStyle(color: Colors.white),
                       ),
                       subtitle: Text(
+
                         '${song.artist}',
                         maxLines: 1,
                         style: TextStyle(color: Colors.white.withOpacity(0.7)),
                       ),
                       trailing: IconButton(onPressed: (){
-                        providers.deleteSongFromPlaylist(widget.play.playlist, song);
+                        setState(() {
+                           provider.deleteSongFromPlaylist(widget.play.playlist, song);
+                           _songs.remove(song);
+                        });
+                       
                     
                       }, icon: const Icon(Icons.delete,color: Colors.white,)),
                     );
                   },
                 );
                           }
-                        },
-                      );
-              }
-            ))
+                        
+            ),) 
+              
+            
           ],
         ),
       ),

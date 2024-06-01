@@ -129,18 +129,15 @@ class SongProvider extends ChangeNotifier {
     if(is_shuffling){
       
       final random = Random().nextInt(_songs.length-1);
-      play_song(_songs[random]);
-      
+      play_song(_songs[random]);    
     }else{
       final index = _songs.indexOf(song);
-
     if (index == _songs.length - 1) {
       play_song(_songs[0]);
     } else {
       play_song(_songs[index + 1]);
     }
-    }
-    
+    }  
   }
 
   //function to play the previous song
@@ -158,14 +155,22 @@ class SongProvider extends ChangeNotifier {
   }
 
   //function to rewind 10 seconds
-  void rewind() async {
+ void rewind() async {
+  if (player.position <= const Duration(seconds: 10)) {
+    await player.seek(Duration.zero);
+  } else {
     await player.seek(player.position - const Duration(seconds: 10));
   }
-
+}
   //function to fast forward 10 seconds
   void fast_forward() async {
-    await player.seek(player.position + const Duration(seconds: 10));
+  Duration newPosition = player.position + const Duration(seconds: 10);
+  if (newPosition >= player.duration!) {
+    await player.seek(player.duration);
+  } else {
+    await player.seek(newPosition);
   }
+}
 
   /** ---------------------------------Song Setting------------------------------------------------------------- */
 

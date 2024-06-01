@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:g_application/pages/Main_screen/playlist/screens/PlaylistDetail.dart';
+import '../../../../common/Provider/SongProvider.dart';
 import '../widget/widget.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
@@ -7,8 +8,26 @@ import 'package:provider/provider.dart';
 import '../../../../common/Provider/playlistProvider.dart';
 import '../popupmenu.dart';
 
-class PlaylistPage extends StatelessWidget {
+class PlaylistPage extends StatefulWidget {
   const PlaylistPage({super.key});
+
+  @override
+  State<PlaylistPage> createState() => _PlaylistPageState();
+}
+
+class _PlaylistPageState extends State<PlaylistPage> {
+  int? rowCount;
+
+@override
+void initState() {
+  super.initState();
+  fetchRowCount();
+}
+
+void fetchRowCount() async {
+  rowCount = await Provider.of<SongProvider>(context, listen: false).getRowCount();
+  setState(() {});
+}
   @override
   Widget build(BuildContext context) {
       final provider=Provider.of<playlistProvider>(context);
@@ -38,7 +57,7 @@ class PlaylistPage extends StatelessWidget {
                       itemBuilder: (context, index) {
                         if (index < 2) {
                           // return your static ListTile widgets based on the index
-                          return buildStaticListTile(index, context);
+                          return buildStaticListTile(index, context,rowCount);
                         } else {
                           var item = provider.playlists[index - 2];
                           return ListTile(

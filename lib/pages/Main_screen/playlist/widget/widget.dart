@@ -70,17 +70,18 @@ void PlaylistPopup(BuildContext context) {
 
 // showing the list tile of the song in the playlist
 
-ListTile buildStaticListTile(int index, BuildContext context) {
+ListTile buildStaticListTile(int index, BuildContext context, int? rowCount) {
   String title;
   IconData icon;
   Widget subtitle;
+  String noOfSongs='22';
   
   switch (index) {
     case 0:
       title = 'Favourites';
       icon = Icons.favorite;
       subtitle = Text(
-        '20 songs',
+        '${noOfSongs} songs',
         style: TextStyle(
           color: Colors.white.withOpacity(0.7),
         ),
@@ -90,23 +91,7 @@ ListTile buildStaticListTile(int index, BuildContext context) {
     case 1:
       title = 'Recently Played';
       icon = Icons.playlist_add;
-     subtitle = FutureBuilder<int?>(
-  future: Provider.of<SongProvider>(context,listen: false).getRowCount(),
-  builder: (BuildContext context,AsyncSnapshot<int?> snapshot) {
-    if (snapshot.connectionState == ConnectionState.waiting) {
-      return const CircularProgressIndicator();
-    } else if (snapshot.hasError) {
-      return Text('Error: ${snapshot.error}');
-    } else {
-      return Text(
-        '${snapshot.data} songs',
-        style: TextStyle(
-          color: Colors.white.withOpacity(0.7),
-        ),
-      );
-    }
-  },
-);
+     subtitle =Text('$rowCount songs',style: TextStyle(color: Colors.white.withOpacity(0.7),),);
       break;
  
     default:
