@@ -1,24 +1,25 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:g_application/common/Provider/AlbumProvider.dart';
 import 'package:g_application/common/Provider/playlistProvider.dart';
 import 'package:g_application/common/utils/height_width.dart';
-import 'package:g_application/pages/Main_screen/playlist/screens/playlistPlay.dart';
+import 'package:g_application/pages/Main_screen/Album/Screens/AlbumPlay.dart';
 import 'package:glossy/glossy.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
 import 'package:vibration/vibration.dart';
 
 
-class PlaylistDetail extends StatefulWidget {
-  static const routeName = '/playlist_detail';
-  final PlaylistModel play;
-  PlaylistDetail({super.key,required this.play});
+class AlbumDetail extends StatefulWidget {
+  static const routeName = '/Album_detail';
+  final AlbumModel play;
+  AlbumDetail({super.key,required this.play});
 
   @override
-  State<PlaylistDetail> createState() => _PlaylistDetailState();
+  State<AlbumDetail> createState() => _AlbumDetailState();
 }
 
-class _PlaylistDetailState extends State<PlaylistDetail> {
+class _AlbumDetailState extends State<AlbumDetail> {
     final OnAudioQuery audioQuery = OnAudioQuery();
 List<SongModel> _songs = [];
 @override
@@ -28,8 +29,8 @@ List<SongModel> _songs = [];
 
     super.initState();
      Future.delayed(const Duration(microseconds: 0), () async {
-      Provider.of<playlistProvider>(context,listen: false).clear_song();
-   await  Provider.of<playlistProvider>(context,listen: false).getSongsFromPlaylist( widget.play);
+      Provider.of<AlbumProvider>(context,listen: false).clear_song();
+   await  Provider.of<AlbumProvider>(context,listen: false).getSongsFromPlaylist( widget.play);
  print('---------------------------------------------songs---------------------');
  _fetchSongs();
 List<SongModel> songs= Provider.of<playlistProvider>(context,listen: false).songs;
@@ -37,12 +38,11 @@ print(songs);
     });
   }
   void _fetchSongs() async {
-  _songs = await audioQuery.queryAudiosFrom(AudiosFromType.PLAYLIST, widget.play.playlist, sortType: SongSortType.DATE_ADDED, orderType: OrderType.ASC_OR_SMALLER);
+  _songs = await audioQuery.queryAudiosFrom(AudiosFromType.ALBUM, widget.play.album, sortType: SongSortType.DATE_ADDED, orderType: OrderType.ASC_OR_SMALLER);
   setState(() {});
 }
   @override
   Widget build(BuildContext context) {
-  final provider = Provider.of<playlistProvider>(context,listen: false);
      return Scaffold( 
 
       body:Container(
@@ -73,7 +73,7 @@ print(songs);
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(90),
-                          child: QueryArtworkWidget(id: widget.play.id, type: ArtworkType.PLAYLIST, artworkFit: BoxFit.cover,
+                          child: QueryArtworkWidget(id: widget.play.id, type: ArtworkType.ALBUM, artworkFit: BoxFit.cover,
                         nullArtworkWidget: Center(child: Image.asset('assets/images/music_symbol2.png',fit: BoxFit.cover,)), ),
                         ),
                       ),
@@ -138,10 +138,10 @@ print(songs);
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 25),
 
-              child: Text('${widget.play.playlist}',
+              child: Text('${widget.play.album}',
               maxLines:1,style:TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.normal),),
             ),
-            Expanded(child: Consumer<playlistProvider>(
+            Expanded(child: Consumer<AlbumProvider>(
               builder: (context,providerss,child) {
                 return  ListView.builder(
                   physics:const BouncingScrollPhysics(),
@@ -158,7 +158,7 @@ print(songs);
                        providerss.stop_Song();
                       //  Provider.of<SongProvider>(context,listen: false).play_song(song);
                        providerss.play_song(song);
-                       Navigator.pushNamed(context, PlaylistPlay.routeName ,arguments: { 'song': song});
+                       Navigator.pushNamed(context, AlbumPlay.routeName);
                         
                       },
                       leading: QueryArtworkWidget(
@@ -183,13 +183,13 @@ print(songs);
                         style: TextStyle(color: Colors.white.withOpacity(0.7)),
                       ),
                       trailing: IconButton(onPressed: (){
-                        setState(() {
-                           provider.deleteSongFromPlaylist(widget.play.playlist, song);
-                           _songs.remove(song);
-                        });
+                        // setState(() {
+                        //    provider.deleteSongFromPlaylist(widget.play.playlist, song);
+                        //    _songs.remove(song);
+                        // });
                        
                     
-                      }, icon: const Icon(Icons.delete,color: Colors.white,)),
+                      }, icon: const Icon(Icons.more_vert,color: Colors.white,)),
                     );
                   },
                 );

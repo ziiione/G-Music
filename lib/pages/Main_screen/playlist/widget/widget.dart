@@ -1,8 +1,7 @@
 // function to show the popup menu button for input of playlist name
   import 'package:flutter/material.dart';
+import 'package:g_application/pages/Main_screen/playlist/screens/RecentlyPlayed.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../common/Provider/SongProvider.dart';
 import '../../../../common/Provider/playlistProvider.dart';
 
 void PlaylistPopup(BuildContext context) {
@@ -118,7 +117,10 @@ ListTile buildStaticListTile(int index, BuildContext context, int? rowCount) {
     ),
     subtitle: subtitle,
     onTap: () {
-      // Navigator.pushNamed(context, recent_played_songs.routeName);
+      if(index==1){
+        Navigator.pushNamed(context, Recentlyplayed.routeName);
+      }
+     
     },
   );
 }

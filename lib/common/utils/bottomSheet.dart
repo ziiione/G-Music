@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:g_application/common/Provider/SongProvider.dart';
 import 'package:g_application/common/Provider/playlistProvider.dart';
 import 'package:on_audio_query/on_audio_query.dart';

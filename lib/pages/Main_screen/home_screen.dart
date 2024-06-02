@@ -1,7 +1,10 @@
 // ignore_for_file: camel_case_types, library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
+import 'package:g_application/pages/Main_screen/Album/Screens/Album_page.dart';
+import 'package:g_application/pages/Main_screen/Artist/screens/ArtistPage.dart';
 import 'package:g_application/pages/Main_screen/Audio/screen/AudioPage.dart';
+import 'package:g_application/pages/Main_screen/Genres/Screens/GeneresPage.dart';
 import 'package:g_application/pages/Main_screen/playlist/screens/playlist_page.dart';
 import '/pages/Main_screen/home_screen/widget/appbar_builder.dart';
 
@@ -20,16 +23,12 @@ class _Home_pageState extends State<Home_page>
       TabController(length: _children.length, vsync: this);
 
   final List<Widget> _children = [
-    // AudioPlayerss(),
-    // playlist_page(),
-    // AlbumPage(),
-    // ArtistPage(),
-    // GenresPage(),
+   
     AudioPlayer(),
     PlaylistPage(),
-    Container(),
-    Container(),
-    Container(),
+    AlbumPage(),
+    ArtistPage(),
+    GenresPage()
   ];
 
   @override
