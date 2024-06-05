@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_custom_tab_bar/library.dart';
 
 import '../../../../common/utils/height_width.dart';
+import '../../../../common/utils/screen/SearchScreen.dart';
 import '../../../../common/widget/text_widget.dart';
 
 AppBar appBarBuilder(BuildContext context, PageController pageController, TabController tabController, List<Widget> children){
@@ -14,7 +15,7 @@ AppBar appBarBuilder(BuildContext context, PageController pageController, TabCon
     
       actions: [IconButton(onPressed: (){
 
-      // Navigator.pushNamed(context, SearchScreen.routeName);
+      Navigator.pushNamed(context, SearchScreen.routeName);
       },
       
        icon: Icon(Icons.search,color: Colors.white.withOpacity(0.7),size: getHeight(context)*0.035,))],

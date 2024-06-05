@@ -10,7 +10,5 @@ Future<void> saveWelcomePageStatus() async {
 //function to get the status of the welcome page
 Future<bool> getWelcomePageStatus() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  print('set status of welcome page');
-  print(prefs.getBool('welcomePageShown') ?? false);
   return prefs.getBool('welcomePageShown') ?? false;
 }

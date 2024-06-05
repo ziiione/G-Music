@@ -24,6 +24,7 @@ class SongProvider extends ChangeNotifier {
   bool is_looping = false;
   bool is_shuffling = false;
   SongModel? currentSong;
+  bool _isplayingSong=false;
   StreamSubscription<Duration?>? _durationSubscription;
   StreamSubscription<Duration?>? _positionSubscription;
 
@@ -34,11 +35,39 @@ class SongProvider extends ChangeNotifier {
   double _sound_volume = 0.4;
   double get sound_volume => _sound_volume;
 
+  
+  SongProvider() {
+    Load_song();
+    assignCurrentSong();
+  
+  }
+  //function to assign the current song to last song of the database
+  void assignCurrentSong() async {
+    final Map<String, dynamic> rows = await getLastPlayedSong();
+    if (rows.isNotEmpty) {
+      currentSong = _songs.firstWhere(
+        (element) =>
+            (element.title == rows['title']) &&
+            (element.artist == rows['artist']) &&
+            (element.album == rows['album']) &&
+            (element.albumId == rows['albumId']),
+      );
+    }
+  }
+  
+
 /**   --------------------------some getter of the app --------------------------------- */
   String get currentTime => _currentTime;
   String get totalTime => _totalTime;
+  bool get isplayingSong => _isplayingSong;
 
   /** --------------------------Database Operation------------------------------------------ */
+  void FalseIsPlayingSong() {
+    _isplayingSong = false;
+    notifyListeners();
+  }
+
+  // function to 
 
   //function to get last played song from the database
   Future<Map<String, dynamic>> getLastPlayedSong() async {
@@ -72,6 +101,7 @@ class SongProvider extends ChangeNotifier {
   //function to play the song
   void play_song(SongModel song) async {
     try {
+      _isplayingSong=true;
       currentSong = song;
       await player.setAudioSource(AudioSource.uri(Uri.parse(song.uri!)));
       player.play();

@@ -47,10 +47,9 @@ dependencies:
   syncfusion_flutter_gauges: ^25.2.6
   glossy: ^0.0.4
   flutter_svg: ^2.0.10+1
-  page_transition: ^2.1.0
   siri_wave: ^2.0.0+1
   equalizer_flutter: ^0.0.1
-  vibration: ^1.9.0
+  audio_session: ^0.1.19
 
 dev_dependencies:
   flutter_test:

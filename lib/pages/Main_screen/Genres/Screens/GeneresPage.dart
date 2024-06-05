@@ -24,10 +24,9 @@ void LoadGenres() async {
 }
   @override
   Widget build(BuildContext context) {
-    return  Consumer<GenresProvider>(
-        builder: (context, genresProvider, child) {
-          List<GenreModel> genres = genresProvider.Genres;
-          return Column(
+    final provider=Provider.of<GenresProvider>(context,listen: false);
+   final genres=provider.Genres;
+    return  Column(
             children: [
               Expanded(
                 child: ListView.builder(
@@ -79,8 +78,6 @@ void LoadGenres() async {
               // PlayerHome()
             ],
           );
-        },
-    
-    );
+        
   }
 }

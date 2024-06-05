@@ -1,4 +1,5 @@
 // ignore_for_file: library_private_types_in_public_api
+import 'package:audio_session/audio_session.dart';
 import 'package:equalizer_flutter/equalizer_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:g_application/common/Provider/AlbumProvider.dart';
@@ -6,6 +7,7 @@ import 'package:g_application/common/Provider/ArtistProvider.dart';
 import 'package:g_application/common/Provider/GenresProvider.dart';
 import 'package:g_application/common/Provider/playlistProvider.dart';
 import 'package:g_application/common/utils/screen/Equalizer.dart';
+import 'package:g_application/common/utils/screen/SearchScreen.dart';
 import 'package:g_application/pages/Main_screen/Album/Screens/AlbumPlay.dart';
 import 'package:g_application/pages/Main_screen/Album/Screens/Album_detail.dart';
 import 'package:g_application/pages/Main_screen/Artist/screens/ArtistDetail.dart';
@@ -18,9 +20,7 @@ import 'pages/Main_screen/Audio/screen/AudioPlay.dart';
 import './pages/getting_permission/permission.dart';
 import './pages/welcome/page_provider/page_provider.dart';
 import './pages/welcome/welcome.dart';
-import 'package:g_application/test.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'common/Provider/SongProvider.dart';
 import 'common/Provider/app_ui_provider.dart';
 import 'pages/Main_screen/Genres/Screens/genresPlay.dart';
@@ -38,10 +38,13 @@ void main() {
     ChangeNotifierProvider(create: (_) => AlbumProvider()),
     ChangeNotifierProvider(create: (_) => ArtistProvider()),
     ChangeNotifierProvider(create: (_) => GenresProvider())
-  ], child: MyApp()));
+  ], child: const MyApp()));
+
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -54,7 +57,29 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     EqualizerFlutter.init(0);
+      Provider.of<SongProvider>(context, listen: false)
+            .Load_song();
     Provider.of<playlistProvider>(context, listen: false).loadPlaylist();
+     setupAudioSession();
+  }
+   void setupAudioSession() async {
+    final session = await AudioSession.instance;
+    await session.configure(const AudioSessionConfiguration.music());
+
+    // Handle audio interruptions (e.g., phone call, another app playing audio)
+    session.interruptionEventStream.listen((event) {
+      if (event.begin) {
+        // Another app started playing audio. Pause your audio is here
+        pauseAll();
+      }
+    });
+  }
+    void pauseAll() {
+    Provider.of<SongProvider>(context, listen: false).pause_Song();
+    Provider.of<GenresProvider>(context, listen: false).pause_Song();
+    Provider.of<AlbumProvider>(context, listen: false).pause_Song();
+    Provider.of<ArtistProvider>(context, listen: false).pause_Song();
+    Provider.of<playlistProvider>(context, listen: false).pause_Song();
   }
 
   @override
@@ -128,7 +153,7 @@ class _MyAppState extends State<MyApp> {
         switch (setting.name) {
           case '/':
             if (!_welcomePageShown) {
-              return createRoute(Welcome());
+              return createRoute(const Welcome());
             } else if (!_permissionGranted) {
               return createRoute(const permission_page());
             } else {
@@ -188,8 +213,11 @@ class _MyAppState extends State<MyApp> {
            case GenresPlay.routeName:
             return createRoute(GenresPlay());
 
+            case SearchScreen.routeName:
+            return createRoute(const SearchScreen());
+
           default:
-            return createRoute(Welcome());
+            return createRoute(const Welcome());
         }
       },
     );

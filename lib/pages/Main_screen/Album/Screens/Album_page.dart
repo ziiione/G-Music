@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:g_application/common/Provider/AlbumProvider.dart';
+import 'package:g_application/common/utils/height_width.dart';
 import 'package:g_application/pages/Main_screen/Album/Screens/Album_detail.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
@@ -59,8 +60,8 @@ void LoadAlbums() async {
                         children: [
                           Expanded(
                             child: Container(
-                              height: 50,
-                              width: 100,
+                              height: getHeight(context) * 0.1,
+                              width: getWidth(context) * 0.25,
                               child: GridTile(
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2),
@@ -79,7 +80,7 @@ void LoadAlbums() async {
                             width: 100,
                             child: Column(
                               children: [
-                                Text('${album.album}',
+                                Text(album.album,
                                     maxLines: 1,
                                     style: const TextStyle(
                                       color: Colors.white,

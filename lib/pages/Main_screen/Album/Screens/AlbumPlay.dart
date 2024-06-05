@@ -10,9 +10,7 @@ import 'package:g_application/pages/Main_screen/Album/widget/animationPlayAlbum.
 import 'package:g_application/pages/Main_screen/Album/widget/sfradialgaugeAlbum.dart';
 import 'package:g_application/pages/Main_screen/Album/widget/slider_control_album.dart';
 import 'package:g_application/pages/Main_screen/Album/widget/timePlayAlbum.dart';
-import 'package:g_application/pages/Main_screen/home_screen.dart';
 import 'package:glossy/glossy.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:siri_wave/siri_wave.dart';
 import '../../../../common/utils/bottomSheet.dart';
 import '../../../../common/utils/height_width.dart';
@@ -39,7 +37,7 @@ class AlbumPlay extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = Provider.of<AlbumProvider>(context);
     return Scaffold(
-
+           
         //gesture detector for swipe up and down, left and right
         body: GestureDetector(
       onHorizontalDragEnd: (details) {
@@ -51,22 +49,7 @@ class AlbumPlay extends StatelessWidget {
           provider.next_song(provider.currentSong!);
         }
       },
-      onVerticalDragUpdate: (details) {
-        if (details.delta.dy > 0) {
-          // If the y direction is positive, the user is dragging down
-          Navigator.pushReplacement(
-            context,
-            PageTransition(
-              type:
-                  PageTransitionType.topToBottom, // This is the transition type
-              duration:
-                  const Duration(milliseconds: 300), // This is the duration
-              child:
-                  const Home_page(), // This is the page you are navigating to
-            ),
-          );
-        }
-      },
+    
       child: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -105,27 +88,18 @@ class AlbumPlay extends StatelessWidget {
                       left: 10,
                       child: IconButton(
                         onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            PageTransition(
-                              type: PageTransitionType
-                                  .topToBottom, // This is the transition type
-                              duration: const Duration(
-                                  milliseconds: 300), // This is the duration
-                              child: const Home_page(),
-                            ),
-                          );
+                         Navigator.pop(context);
                         },
-                        icon: const Icon(Icons.keyboard_arrow_down,
+                        icon: const Icon(Icons.arrow_back_ios,
                             color: Colors.white, size: 30),
                       ),
                     ),
                   ],
                 ),
                 SizedBox(height: getHeight(context) * 0.02),
-
+    
                 //song details
-
+    
                 Column(
                   children: [
                     GlossyContainer(
@@ -190,11 +164,11 @@ class AlbumPlay extends StatelessWidget {
                         ),
                       ),
                     ),
-
+    
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.02,
                     ),
-
+    
                     //play control
                     Column(
                       children: [
@@ -221,6 +195,3 @@ class AlbumPlay extends StatelessWidget {
     ));
   }
 }
-
-
-

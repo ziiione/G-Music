@@ -23,8 +23,10 @@ class GenresProvider extends ChangeNotifier {
   bool is_looping = false;
   bool is_shuffling = false;
   SongModel? currentSong;
+  bool _isplayingFromGenres=false;
   StreamSubscription<Duration?>? _durationSubscription;
   StreamSubscription<Duration?>? _positionSubscription;
+
 
   List<SongModel> _songs = [];
   final ValueNotifier<bool> _isPlayingNotifier = ValueNotifier<bool>(false);
@@ -40,16 +42,19 @@ class GenresProvider extends ChangeNotifier {
   List<SongModel> get songs => _songs;
   String get currentTime => _currentTime;
   String get totalTime => _totalTime;
+  bool get isplayingFromGenres => _isplayingFromGenres;
 
 
-GenresProvider() {
-  player.playerStateStream.listen((state) {
-    if (state.processingState == ProcessingState.completed) {
-      next_song(currentSong!);
-    }
-  });
-}
+
+
+
 /**----------------------------------------playlist play control function--------------------------------- */
+
+//function to change isplayingfromGenres to false
+  void FalseisplayingFromGenres(){
+    _isplayingFromGenres=false;
+    notifyListeners();
+  }
 
   //function to play the song
   void play_song(SongModel song) async {
@@ -64,6 +69,7 @@ GenresProvider() {
       currentSong = song;
       await player.setAudioSource(AudioSource.uri(Uri.parse(song.data)));
       player.play();
+      _isplayingFromGenres=true;
       _isPlayingNotifier.value = true;
 
       Map<String, dynamic> row = {
@@ -76,6 +82,12 @@ GenresProvider() {
       update_time();
       _isplaying = true;
       notifyListeners();
+        // Listen to the player's state and play the next song when the current song finishes
+    player.processingStateStream.listen((state) {
+      if (state == ProcessingState.completed) {
+        next_song(song);
+      }
+    });
     } catch (e) {
       print(e);
     }
@@ -83,6 +95,7 @@ GenresProvider() {
 
 //function to stop the song playing
   void stop_Song() async {
+    
     await player.stop();
     _isplaying = false;
     _isPlayingNotifier.value = false;
@@ -91,6 +104,9 @@ GenresProvider() {
 
   //function to pause the song
   void pause_Song() async {
+    print('print the song of provider stored in that _songs');
+    print(_songs);
+    print('print the song of provider stored in that _songs');
     await player.pause();
 
     _isplaying = false;
@@ -100,17 +116,24 @@ GenresProvider() {
 
   //function to resume the song
   void resume_Song() async {
+     print('print the song of provider stored in that _songs');
+    print(_songs);
+    print('print the song of provider stored in that _songs');
     await player.play();
     _isplaying = true;
     _isPlayingNotifier.value = true;
     notifyListeners();
   }
 
+
+
+ //function to play the next song
   void next_song(SongModel song) async {
-     if(is_shuffling){
-      final random = Random().nextInt(_songs.length-1);
-      play_song(_songs[random]);}else{
-  print(_songs);
+  if(is_shuffling){
+    final random = Random().nextInt(_songs.length);
+    play_song(_songs[random]);
+  } else {
+    print(_songs);
     int index=-1;
     for(int i=0;i<_songs.length;i++){
       if((song.albumId==_songs[i].albumId)&&(song.id==_songs[i].id)&&(song.title==_songs[i].title)){
@@ -119,21 +142,17 @@ GenresProvider() {
       }
     }
   
-  print(song.data);
+    print(song.data);
   
-  print('doing the next song');
-  if (index!=-1&& (index<_songs.length)) { // Check if the index is within the valid range
-   
-    play_song(_songs[(index + 1) % (_songs.length)]);
-
-  }else{
-    
-    play_song(_songs[0]);
-    print('not playing the song');
+    print('doing the next song');
+    if (index!=-1 && index + 1 < _songs.length) { // Check if the index is within the valid range
+      play_song(_songs[index + 1]);
+    } else {
+      // Decide what to do if the current song is the last one in the list
+      stop_Song();
   }
-      }
-  
-}
+  }}
+
 
   //function to play the previous song
   void previous_song(SongModel song) async {
@@ -261,8 +280,9 @@ GenresProvider() {
 Future<List<SongModel>> getSongsFromGenres(GenreModel play) async {
   final audioQuery = OnAudioQuery();
   try {
-    final _songs = await audioQuery.queryAudiosFrom(
+    _songs = await audioQuery.queryAudiosFrom(
         AudiosFromType.GENRE, play.genre, sortType: SongSortType.DATE_ADDED, orderType: OrderType.ASC_OR_SMALLER);
+
     return [..._songs];
   } catch (e) {
     print(e);
@@ -271,4 +291,4 @@ Future<List<SongModel>> getSongsFromGenres(GenreModel play) async {
   }
 }
 }
-
+  

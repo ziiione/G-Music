@@ -21,7 +21,7 @@ class _RecentlyplayedState extends State<Recentlyplayed> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Recently Played',
           style: TextStyle(color: Colors.white),
         ),
@@ -34,7 +34,7 @@ class _RecentlyplayedState extends State<Recentlyplayed> {
           future: provider.queryAllRows(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
+              return const Center(
                 child: CircularProgressIndicator(),
               );
             }
@@ -56,12 +56,12 @@ class _RecentlyplayedState extends State<Recentlyplayed> {
                   title: Consumer<SongProvider>(
                       builder: (context, provider, child) {
                     return Text('${item['title']}',
-                        maxLines: 1, style: TextStyle(color: Colors.white));
+                        maxLines: 1, style: const TextStyle(color: Colors.white));
                   }),
                   subtitle: Consumer<SongProvider>(
                       builder: (context, provider, child) {
                     return Text('${item['artist']}',
-                        maxLines: 1, style: TextStyle(color: Colors.grey));
+                        maxLines: 1, style: const TextStyle(color: Colors.grey));
                   }),
                   trailing: Consumer<SongProvider>(
                       builder: (context, provider, child) {

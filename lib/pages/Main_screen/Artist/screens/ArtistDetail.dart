@@ -1,14 +1,11 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:g_application/common/Provider/ArtistProvider.dart';
-import 'package:g_application/common/Provider/playlistProvider.dart';
 import 'package:g_application/common/utils/height_width.dart';
 import 'package:g_application/pages/Main_screen/Artist/screens/ArtistPlay.dart';
-import 'package:g_application/pages/Main_screen/playlist/screens/playlistPlay.dart';
 import 'package:glossy/glossy.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
-import 'package:vibration/vibration.dart';
 
 class ArtistDetail extends StatefulWidget {
   static const routeName = '/Artist_detail';
@@ -31,12 +28,13 @@ class _ArtistDetailState extends State<ArtistDetail> {
       Provider.of<ArtistProvider>(context, listen: false).clear_song();
       await Provider.of<ArtistProvider>(context, listen: false)
           .getSongsFromArtist(widget.play);
-      print(
-          '---------------------------------------------songs---------------------');
+     
+        
       _fetchSongs();
       List<SongModel> songs =
           Provider.of<ArtistProvider>(context, listen: false).songs;
-      print(songs);
+          print(songs);
+      
     });
   }
 
@@ -44,6 +42,7 @@ class _ArtistDetailState extends State<ArtistDetail> {
     _songs = await audioQuery.queryAudiosFrom(
         AudiosFromType.ARTIST, widget.play.artist,
         sortType: SongSortType.DATE_ADDED, orderType: OrderType.ASC_OR_SMALLER);
+        // print(_songs);
     setState(() {});
   }
 
@@ -190,12 +189,7 @@ class _ArtistDetailState extends State<ArtistDetail> {
                     SongModel song = _songs[index];
                     return ListTile(
                       onTap: () {
-                        print(
-                            '---------------------------------------------uri is pressed---------------------');
-                        print(song.uri);
-                        print(
-                            '---------------------------------------------uri is pressed---------------------');
-                        Vibration.vibrate();
+                      
                        
                         providerss.stop_Song();
                         //  Provider.of<SongProvider>(context,listen: false).play_song(song);
@@ -222,7 +216,9 @@ class _ArtistDetailState extends State<ArtistDetail> {
                         style: TextStyle(color: Colors.white.withOpacity(0.7)),
                       ),
                       trailing: IconButton(
-                          onPressed: () {},
+                          onPressed: ()async {
+              
+                          },
                           icon: const Icon(
                             Icons.more_vert,
                             color: Colors.white,

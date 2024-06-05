@@ -1,4 +1,5 @@
-import 'dart:ui';
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:g_application/common/Provider/playlistProvider.dart';
 import 'package:g_application/common/utils/height_width.dart';
@@ -6,13 +7,11 @@ import 'package:g_application/pages/Main_screen/playlist/screens/playlistPlay.da
 import 'package:glossy/glossy.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
-import 'package:vibration/vibration.dart';
-
 
 class PlaylistDetail extends StatefulWidget {
   static const routeName = '/playlist_detail';
   final PlaylistModel play;
-  PlaylistDetail({super.key,required this.play});
+  const PlaylistDetail({super.key,required this.play});
 
   @override
   State<PlaylistDetail> createState() => _PlaylistDetailState();
@@ -30,7 +29,6 @@ List<SongModel> _songs = [];
      Future.delayed(const Duration(microseconds: 0), () async {
       Provider.of<playlistProvider>(context,listen: false).clear_song();
    await  Provider.of<playlistProvider>(context,listen: false).getSongsFromPlaylist( widget.play);
- print('---------------------------------------------songs---------------------');
  _fetchSongs();
 List<SongModel> songs= Provider.of<playlistProvider>(context,listen: false).songs;
 print(songs);
@@ -107,20 +105,20 @@ print(songs);
               child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width*0.3,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                 
 
-                  Text(_songs.length.toString(),style: TextStyle(color: Colors.white,),),
+                  Text(_songs.length.toString(),style: const TextStyle(color: Colors.white,),),
                           
                        
                     const Icon( Icons.shuffle,color: Colors.white,),
                   ],
                 ),
-              ),            Container(
+              ),            SizedBox(
                 width: MediaQuery.of(context).size.width*0.5,
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -138,8 +136,8 @@ print(songs);
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 25),
 
-              child: Text('${widget.play.playlist}',
-              maxLines:1,style:TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.normal),),
+              child: Text(widget.play.playlist,
+              maxLines:1,style:const TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.normal),),
             ),
             Expanded(child: Consumer<playlistProvider>(
               builder: (context,providerss,child) {
@@ -150,10 +148,8 @@ print(songs);
                     SongModel song = _songs[index];
                     return ListTile(
                       onTap: () {
-                        print('---------------------------------------------uri is pressed---------------------');
-                        print(song.uri);
-                         print('---------------------------------------------uri is pressed---------------------');
-                       Vibration.vibrate();
+                        
+                     
                       
                        providerss.stop_Song();
                       //  Provider.of<SongProvider>(context,listen: false).play_song(song);

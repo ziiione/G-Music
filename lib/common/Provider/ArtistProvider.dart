@@ -10,7 +10,7 @@ import 'package:on_audio_query/on_audio_query.dart';
 import '../Database/DatabaseHelper.dart';
 
 class ArtistProvider extends ChangeNotifier {
-    final audioQuery = OnAudioQuery();
+  final audioQuery = OnAudioQuery();
   final databasehelper = DatabaseHelper.instance;
   final player = AudioPlayer();
 
@@ -23,6 +23,7 @@ class ArtistProvider extends ChangeNotifier {
   bool is_looping = false;
   bool is_shuffling = false;
   SongModel? currentSong;
+   bool _isplayingFromArtist=false;
   StreamSubscription<Duration?>? _durationSubscription;
   StreamSubscription<Duration?>? _positionSubscription;
 
@@ -34,29 +35,25 @@ class ArtistProvider extends ChangeNotifier {
   double get sound_volume => _sound_volume;
   List<ArtistModel> _Artist = [];
 
-
   List<ArtistModel> get Artist => _Artist;
 
   List<SongModel> get songs => _songs;
   String get currentTime => _currentTime;
   String get totalTime => _totalTime;
+  bool get isplayingFromArtist => _isplayingFromArtist;
 
-
-ArtistProvider() {
-  player.playerStateStream.listen((state) {
-    if (state.processingState == ProcessingState.completed) {
-      next_song(currentSong!);
-    }
-  });
-}
-
-
-void  setCurrentSong(SongModel song){
-  currentSong = song;
-  notifyListeners();
-}
+  void setCurrentSong(SongModel song) {
+    currentSong = song;
+    notifyListeners();
+  }
 
 /**----------------------------------------playlist play control function--------------------------------- */
+
+//function to false the isplayingfromartist
+  void FalseisplayingFromArtist() {
+    _isplayingFromArtist = false;
+    notifyListeners();
+  }
 
   //function to play the song
   void play_song(SongModel song) async {
@@ -71,6 +68,7 @@ void  setCurrentSong(SongModel song){
       currentSong = song;
       await player.setAudioSource(AudioSource.uri(Uri.parse(song.data)));
       player.play();
+      _isplayingFromArtist = true;
       _isPlayingNotifier.value = true;
 
       Map<String, dynamic> row = {
@@ -83,11 +81,23 @@ void  setCurrentSong(SongModel song){
       update_time();
       _isplaying = true;
       notifyListeners();
+      // Listen to the player's state and play the next song when the current song finishes
+      player.processingStateStream.listen((state) {
+        if (state == ProcessingState.completed) {
+          next_song(song);
+        }
+      });
     } catch (e) {
       print(e);
     }
   }
 
+//function to make the current time 0
+  void make_current_time_zero() {
+    _currentTime = '0';
+    notifyListeners();
+  }
+ 
 //function to stop the song playing
   void stop_Song() async {
     await player.stop();
@@ -98,6 +108,7 @@ void  setCurrentSong(SongModel song){
 
   //function to pause the song
   void pause_Song() async {
+    print(_songs);
     await player.pause();
 
     _isplaying = false;
@@ -113,73 +124,79 @@ void  setCurrentSong(SongModel song){
     notifyListeners();
   }
 
+  //function to play the next song
   void next_song(SongModel song) async {
-     if(is_shuffling){
-      final random = Random().nextInt(_songs.length-1);
-      play_song(_songs[random]);}else{
-  print(_songs);
-    int index=-1;
-    for(int i=0;i<_songs.length;i++){
-      if((song.albumId==_songs[i].albumId)&&(song.id==_songs[i].id)&&(song.title==_songs[i].title)){
-        index=i;
-        break;
+    if (is_shuffling) {
+      final random = Random().nextInt(_songs.length);
+      play_song(_songs[random]);
+    } else {
+      print(_songs);
+      int index = -1;
+      for (int i = 0; i < _songs.length; i++) {
+        if ((song.albumId == _songs[i].albumId) &&
+            (song.id == _songs[i].id) &&
+            (song.title == _songs[i].title)) {
+          index = i;
+          break;
+        }
+      }
+
+      print(song.data);
+
+      print('doing the next song');
+      if (index != -1 && index + 1 < _songs.length) {
+        // Check if the index is within the valid range
+        play_song(_songs[index + 1]);
+      } else {
+        // Decide what to do if the current song is the last one in the list
+        stop_Song();
       }
     }
-  
-  print(song.data);
-  
-  print('doing the next song');
-  if (index!=-1&& (index<_songs.length)) { // Check if the index is within the valid range
-   
-    play_song(_songs[(index + 1) % (_songs.length)]);
-
-  }else{
-    
-    play_song(_songs[0]);
-    print('not playing the song');
   }
-      }
-  
-}
 
   //function to play the previous song
   void previous_song(SongModel song) async {
-    if(is_shuffling){
-      final random = Random().nextInt(_songs.length-1);
-      play_song(_songs[random]);}
-    else{
-          int index=-1;
-    for(int i=0;i<_songs.length;i++){
-      if((song.albumId==_songs[i].albumId)&&(song.id==_songs[i].id)&&(song.title==_songs[i].title)){
-        index=i;
-        break;
+    if (is_shuffling) {
+      final random = Random().nextInt(_songs.length - 1);
+      play_song(_songs[random]);
+    } else {
+      int index = -1;
+      for (int i = 0; i < _songs.length; i++) {
+        if ((song.albumId == _songs[i].albumId) &&
+            (song.id == _songs[i].id) &&
+            (song.title == _songs[i].title)) {
+          index = i;
+          break;
+        }
+      }
+
+      if (index == 0) {
+        play_song(_songs[_songs.length - 1]);
+      } else {
+        play_song(_songs[index - 1]);
       }
     }
-    
-    if (index == 0) {
-      play_song(_songs[_songs.length - 1]);
-    } else {
-      play_song(_songs[index - 1]);
-    }}
   }
 
   //function to rewind 10 seconds
- void rewind() async {
-  if (player.position <= const Duration(seconds: 10)) {
-    await player.seek(Duration.zero);
-  } else {
-    await player.seek(player.position - const Duration(seconds: 10));
+  void rewind() async {
+    if (player.position <= const Duration(seconds: 10)) {
+      await player.seek(Duration.zero);
+    } else {
+      await player.seek(player.position - const Duration(seconds: 10));
+    }
   }
-}
+
   //function to fast forward 10 seconds
   void fast_forward() async {
-  Duration newPosition = player.position + const Duration(seconds: 10);
-  if (newPosition >= player.duration!) {
-    await player.seek(player.duration);
-  } else {
-    await player.seek(newPosition);
+    Duration newPosition = player.position + const Duration(seconds: 10);
+    if (newPosition >= player.duration!) {
+      await player.seek(player.duration);
+    } else {
+      await player.seek(newPosition);
+    }
   }
-}
+
 /**--------------------------song volume control ---------------------------------------------------- */
   //function to change the volume of the song
   void change_volume(double newVolume) async {
@@ -193,7 +210,7 @@ void  setCurrentSong(SongModel song){
   }
 
   //function to update the time of the song
-     void update_time() {
+  void update_time() {
     try {
       _durationSubscription = player.durationStream.listen((event) {
         _totalTime = event!.toString().split(".")[0];
@@ -209,7 +226,8 @@ void  setCurrentSong(SongModel song){
       print(e);
     }
   }
-   @override
+
+  @override
   void dispose() {
     _durationSubscription?.cancel();
     _positionSubscription?.cancel();
@@ -246,15 +264,13 @@ void  setCurrentSong(SongModel song){
     }
   }
 
- 
 /** ---------------------------------------------- loading and permisssion activity and clear song------------------------------ */
   // function to load the playlist
- Future<void>  loadArtist() async {
+  Future<void> loadArtist() async {
     _Artist = await audioQuery.queryArtists();
     print('.............................................................');
     notifyListeners();
   }
-
 
 //function to clear _song list
   void clear_song() {
@@ -262,22 +278,20 @@ void  setCurrentSong(SongModel song){
     notifyListeners();
   }
 
-
-  
 //function to get the song list from the artist
-Future<List<SongModel>> getSongsFromArtist(ArtistModel play) async {
-  final audioQuery = OnAudioQuery();
-  try {
-    final _songs = await audioQuery.queryAudiosFrom(
-        AudiosFromType.ARTIST, play.artist, sortType: SongSortType.DATE_ADDED, orderType: OrderType.ASC_OR_SMALLER);
-    return [..._songs];
-  } catch (e) {
-    print(e);
-    print('Failed to get songs from playlist: $e');
-    return [];
+  Future<List<SongModel>> getSongsFromArtist(ArtistModel play) async {
+    final audioQuery = OnAudioQuery();
+    try {
+      _songs = await audioQuery.queryAudiosFrom(
+          AudiosFromType.ARTIST, play.artist,
+          sortType: SongSortType.DATE_ADDED,
+          orderType: OrderType.ASC_OR_SMALLER);
+
+      return [..._songs];
+    } catch (e) {
+      print(e);
+      print('Failed to get songs from playlist: $e');
+      return [];
+    }
   }
 }
-
-}
-
-

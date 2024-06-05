@@ -23,6 +23,7 @@ class AlbumProvider extends ChangeNotifier {
   bool is_looping = false;
   bool is_shuffling = false;
   SongModel? currentSong;
+  bool _isplayingFromAlbum=false;
   StreamSubscription<Duration?>? _durationSubscription;
   StreamSubscription<Duration?>? _positionSubscription;
 
@@ -40,16 +41,16 @@ class AlbumProvider extends ChangeNotifier {
   List<SongModel> get songs => _songs;
   String get currentTime => _currentTime;
   String get totalTime => _totalTime;
+  bool get isplayingFromAlbum => _isplayingFromAlbum;
 
 
-AlbumProvider() {
-  player.playerStateStream.listen((state) {
-    if (state.processingState == ProcessingState.completed) {
-      next_song(currentSong!);
-    }
-  });
-}
 /**----------------------------------------playlist play control function--------------------------------- */
+
+//function to change isplayingfromAlbum to false
+  void FalseisplayingFromAlbum() {
+    _isplayingFromAlbum = false;
+    notifyListeners();
+  }
 
   //function to play the song
   void play_song(SongModel song) async {
@@ -64,6 +65,7 @@ AlbumProvider() {
       currentSong = song;
       await player.setAudioSource(AudioSource.uri(Uri.parse(song.data)));
       player.play();
+      _isplayingFromAlbum=true;
       _isPlayingNotifier.value = true;
 
       Map<String, dynamic> row = {
@@ -76,6 +78,12 @@ AlbumProvider() {
       update_time();
       _isplaying = true;
       notifyListeners();
+      // Listen to the player's state and play the next song when the current song finishes
+    player.processingStateStream.listen((state) {
+      if (state == ProcessingState.completed) {
+        next_song(song);
+      }
+    });
     } catch (e) {
       print(e);
     }
@@ -106,11 +114,13 @@ AlbumProvider() {
     notifyListeners();
   }
 
+ //function to play the next song
   void next_song(SongModel song) async {
-     if(is_shuffling){
-      final random = Random().nextInt(_songs.length-1);
-      play_song(_songs[random]);}else{
-  print(_songs);
+  if(is_shuffling){
+    final random = Random().nextInt(_songs.length);
+    play_song(_songs[random]);
+  } else {
+    print(_songs);
     int index=-1;
     for(int i=0;i<_songs.length;i++){
       if((song.albumId==_songs[i].albumId)&&(song.id==_songs[i].id)&&(song.title==_songs[i].title)){
@@ -119,20 +129,17 @@ AlbumProvider() {
       }
     }
   
-  print(song.data);
+    print(song.data);
   
-  print('doing the next song');
-  if (index!=-1&& (index<_songs.length)) { // Check if the index is within the valid range
-   
-    play_song(_songs[(index + 1) % (_songs.length)]);
-
-  }else{
-    
-    play_song(_songs[0]);
-    print('not playing the song');
+    print('doing the next song');
+    if (index!=-1 && index + 1 < _songs.length) { // Check if the index is within the valid range
+      play_song(_songs[index + 1]);
+    } else {
+      // Decide what to do if the current song is the last one in the list
+     stop_Song();
+     
+    }
   }
-      }
-  
 }
 
   //function to play the previous song

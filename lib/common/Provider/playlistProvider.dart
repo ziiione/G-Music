@@ -23,6 +23,7 @@ class playlistProvider extends ChangeNotifier {
   bool is_looping = false;
   bool is_shuffling = false;
   SongModel? currentSong;
+  bool _isplayingFromPlaylist=false;
   StreamSubscription<Duration?>? _durationSubscription;
   StreamSubscription<Duration?>? _positionSubscription;
 
@@ -49,11 +50,20 @@ playlistProvider() {
     }
   });
 }
+/**------------------------- some getter to get the value----------------------------------- */
+  bool  get isplayingFromPlaylist => _isplayingFromPlaylist;
+ 
 /**----------------------------------------playlist play control function--------------------------------- */
+//function to false is playing from playlist
+  void FalseIsPlayingFromPlaylist(){
+    _isplayingFromPlaylist=false;
+    notifyListeners();
+  }
 
   //function to play the song
   void play_song(SongModel song) async {
     try {
+      
       print('--------------------going to play the song-------------------');
       if (currentSong != null && currentSong!.id != song.id) {
         await player.stop();
@@ -64,6 +74,7 @@ playlistProvider() {
       currentSong = song;
       await player.setAudioSource(AudioSource.uri(Uri.parse(song.data)));
       player.play();
+      _isplayingFromPlaylist=true;
       _isPlayingNotifier.value = true;
 
       Map<String, dynamic> row = {

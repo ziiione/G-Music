@@ -4,12 +4,28 @@ import 'package:g_application/pages/welcome/page_provider/page_provider.dart';
 import 'package:provider/provider.dart';
 import 'widget.dart';
 
+class Welcome extends StatefulWidget {
+   const Welcome({super.key});
 
+  @override
+  State<Welcome> createState() => _WelcomeState();
+}
 
-class Welcome extends StatelessWidget {
-   Welcome({super.key});
-
+class _WelcomeState extends State<Welcome> {
 final PageController controller=PageController();
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    precacheImage(const AssetImage('assets/images/lady3.png'), context);
+    precacheImage(const AssetImage('assets/images/track_cutting.png'), context);
+    precacheImage(const AssetImage('assets/images/noAds.png'), context);
+  }
+
+  @override
+void dispose() {
+  controller.dispose();
+  super.dispose();
+}
 
   @override
   Widget build(BuildContext context,) {
@@ -18,7 +34,6 @@ final PageController controller=PageController();
       color: Colors.white,
       child: SafeArea(
         child: Scaffold(
-          
           body: Container(
             margin: const EdgeInsets.only(top: 30),
             child: Consumer<PageProvider>(

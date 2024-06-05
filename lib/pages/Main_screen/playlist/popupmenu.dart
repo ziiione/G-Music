@@ -41,31 +41,30 @@ class PopupMenuBottom extends StatelessWidget {
 
 //showing the popup to rename the playlist
 void rename(BuildContext context, String playlistName, PlaylistModel playlistModel) {
-  TextEditingController _playlistNameController = TextEditingController();
+  TextEditingController playlistNameController = TextEditingController();
   showDialog(
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: Text('Rename Playlist'),
+        title: const Text('Rename Playlist'),
         content: TextField(
-          controller: _playlistNameController,
-          decoration: InputDecoration(hintText: 'Enter Playlist Name'),
+          controller: playlistNameController,
+          decoration: const InputDecoration(hintText: 'Enter Playlist Name'),
         ),
         actions: [
           TextButton(
             onPressed: () {
-              print(_playlistNameController.text);
               Provider.of<playlistProvider>(context,listen: false )
-                  .renamePlaylist(playlistModel.playlist, _playlistNameController.text);
+                  .renamePlaylist(playlistModel.playlist, playlistNameController.text);
               Navigator.pop(context);
             },
-            child: Text('Rename'),
+            child: const Text('Rename'),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
             },
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
         ],
       );

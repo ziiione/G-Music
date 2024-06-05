@@ -5,7 +5,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:g_application/common/Provider/playlistProvider.dart';
 import 'package:g_application/common/utils/app_color.dart';
 import 'package:g_application/common/widget/text_widget.dart';
-import 'package:g_application/pages/Main_screen/home_screen.dart';
 import 'package:g_application/pages/Main_screen/playlist/widget/TimePlayValuePlaylist.dart';
 import 'package:g_application/pages/Main_screen/playlist/widget/icon_row_playlist.dart';
 import 'package:g_application/pages/Main_screen/playlist/widget/pause_next_loop_suffle_playlist.dart';
@@ -13,7 +12,6 @@ import 'package:g_application/pages/Main_screen/playlist/widget/sfradialgauge.da
 import 'package:g_application/pages/Main_screen/playlist/widget/sliderControlPlaylist.dart';
 import 'package:glossy/glossy.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:siri_wave/siri_wave.dart';
 import '../../../../../common/utils/bottomSheet.dart';
 import '../../../../../common/utils/height_width.dart';
@@ -54,22 +52,7 @@ class PlaylistPlay extends StatelessWidget {
           provider.next_song(provider.currentSong!);
         }
       },
-      onVerticalDragUpdate: (details) {
-        if (details.delta.dy > 0) {
-          // If the y direction is positive, the user is dragging down
-          Navigator.pushReplacement(
-            context,
-            PageTransition(
-              type:
-                  PageTransitionType.topToBottom, // This is the transition type
-              duration:
-                  const Duration(milliseconds: 300), // This is the duration
-              child:
-                  const Home_page(), // This is the page you are navigating to
-            ),
-          );
-        }
-      },
+     
       child: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -108,18 +91,9 @@ class PlaylistPlay extends StatelessWidget {
                       left: 10,
                       child: IconButton(
                         onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            PageTransition(
-                              type: PageTransitionType
-                                  .topToBottom, // This is the transition type
-                              duration: const Duration(
-                                  milliseconds: 300), // This is the duration
-                              child: const Home_page(),
-                            ),
-                          );
+                          Navigator.pop(context);
                         },
-                        icon: const Icon(Icons.keyboard_arrow_down,
+                        icon: const Icon(Icons.arrow_back_ios,
                             color: Colors.white, size: 30),
                       ),
                     ),

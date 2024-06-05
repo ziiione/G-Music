@@ -79,7 +79,8 @@ class _PauseNextLoopSuffleGenresState extends State<PauseNextLoopSuffleGenres> {
             ),
             InkWell(
                 borderRadius: BorderRadius.circular(50),
-                onTap: () {
+                onTap: () async
+                {
                   provider.next_song(provider.currentSong!);
                 },
                 child: Container(
