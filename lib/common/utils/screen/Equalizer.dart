@@ -18,7 +18,7 @@ class _EqualizerPageState extends State<EqualizerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: Colors.black.withOpacity(0.8),
+        color: Colors.black,
         child: ListView(
           children: [
             Container(

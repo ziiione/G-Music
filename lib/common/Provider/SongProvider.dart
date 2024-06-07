@@ -25,6 +25,10 @@ class SongProvider extends ChangeNotifier {
   bool is_shuffling = false;
   SongModel? currentSong;
   bool _isplayingSong=false;
+  bool _startTimer=false;
+  Duration _currentDuration = Duration.zero;
+  StreamSubscription? _tickerSubscription;
+
   StreamSubscription<Duration?>? _durationSubscription;
   StreamSubscription<Duration?>? _positionSubscription;
 
@@ -33,8 +37,7 @@ class SongProvider extends ChangeNotifier {
   ValueNotifier<bool> get isPlayingNotifier => _isPlayingNotifier;
 
   double _sound_volume = 0.4;
-  double get sound_volume => _sound_volume;
-
+ 
   
   SongProvider() {
     Load_song();
@@ -60,6 +63,9 @@ class SongProvider extends ChangeNotifier {
   String get currentTime => _currentTime;
   String get totalTime => _totalTime;
   bool get isplayingSong => _isplayingSong;
+   double get sound_volume => _sound_volume;
+  bool get startTimer => _startTimer;
+  Duration get currentDuration => _currentDuration;
 
   /** --------------------------Database Operation------------------------------------------ */
   void FalseIsPlayingSong() {
@@ -312,5 +318,36 @@ class SongProvider extends ChangeNotifier {
     } else {
       SystemNavigator.pop();
     }
+  }
+
+  /**---------------------Timer operations------------------------- */
+
+  //function to start the timer
+ void Timertoshow(Duration duration) {
+  print('Timer started-----------------');
+  _startTimer=true;
+  _currentDuration = Duration.zero;
+  _currentDuration = duration;
+  _tickerSubscription = Stream.periodic(const Duration(seconds: 1), (x) => x)
+      .listen((_) {
+    _currentDuration -= const Duration(seconds: 1);   
+    print('Remaining time: ${_currentDuration.inSeconds} seconds');
+    notifyListeners();
+    print(_startTimer);
+  });
+  Timer(duration, stop_Timer);
+  notifyListeners();
+}
+
+  //function to stop the timer
+  void stop_Timer() {
+    print(_startTimer);
+    print('Timer is called to stop the song');
+    _currentDuration = Duration.zero;
+    _startTimer=false;
+    print(_startTimer);
+    _tickerSubscription?.cancel();
+    _tickerSubscription = null;
+    notifyListeners();
   }
 }

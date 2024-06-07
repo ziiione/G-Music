@@ -5,9 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:g_application/common/Provider/AlbumProvider.dart';
 import 'package:g_application/common/Provider/ArtistProvider.dart';
 import 'package:g_application/common/Provider/GenresProvider.dart';
+import 'package:g_application/common/Provider/Timer.dart';
 import 'package:g_application/common/Provider/playlistProvider.dart';
 import 'package:g_application/common/utils/screen/Equalizer.dart';
 import 'package:g_application/common/utils/screen/SearchScreen.dart';
+import 'package:g_application/common/utils/screen/SettingPage.dart';
+import 'package:g_application/common/utils/screen/Sleep.dart';
+import 'package:g_application/common/utils/screen/settings_pages/Private_policy.dart';
 import 'package:g_application/pages/Main_screen/Album/Screens/AlbumPlay.dart';
 import 'package:g_application/pages/Main_screen/Album/Screens/Album_detail.dart';
 import 'package:g_application/pages/Main_screen/Artist/screens/ArtistDetail.dart';
@@ -16,6 +20,10 @@ import 'package:g_application/pages/Main_screen/Genres/Screens/GenresDetail.dart
 import 'package:g_application/pages/Main_screen/playlist/screens/PlaylistDetail.dart';
 import 'package:g_application/pages/Main_screen/playlist/screens/RecentlyPlayed.dart';
 import 'package:g_application/pages/Main_screen/playlist/screens/playlistPlay.dart';
+import 'package:metadata_god/metadata_god.dart';
+import 'common/utils/screen/About.dart';
+import 'common/utils/screen/Track_cutting.dart';
+import 'common/utils/screen/settings_pages/terms_and_condition.dart';
 import 'pages/Main_screen/Audio/screen/AudioPlay.dart';
 import './pages/getting_permission/permission.dart';
 import './pages/welcome/page_provider/page_provider.dart';
@@ -28,6 +36,7 @@ import 'pages/Main_screen/home_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  MetadataGod.initialize();
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(
       create: (_) => PageProvider(),
@@ -37,7 +46,8 @@ void main() {
     ChangeNotifierProvider(create: (_) => playlistProvider()),
     ChangeNotifierProvider(create: (_) => AlbumProvider()),
     ChangeNotifierProvider(create: (_) => ArtistProvider()),
-    ChangeNotifierProvider(create: (_) => GenresProvider())
+    ChangeNotifierProvider(create: (_) => GenresProvider()),
+  
   ], child: const MyApp()));
 
 }
@@ -57,6 +67,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     EqualizerFlutter.init(0);
+
       Provider.of<SongProvider>(context, listen: false)
             .Load_song();
     Provider.of<playlistProvider>(context, listen: false).loadPlaylist();
@@ -215,6 +226,27 @@ class _MyAppState extends State<MyApp> {
 
             case SearchScreen.routeName:
             return createRoute(const SearchScreen());
+
+            case AboutPage.routeName:
+            return createRoute( AboutPage());
+
+            case Track_cutter.routeName:
+            var args = setting.arguments as Map;
+            var file= args['file'];
+            var song = args['song'];
+            return createRoute( Track_cutter(file: file,song: song,));
+
+            case SleepTimerScreen.routeName:
+            return createRoute( const SleepTimerScreen());
+
+            case SettingsPage.routeName:
+            return createRoute( const SettingsPage());
+
+            case TermsAndConditionsPage.routeName:
+            return createRoute( const TermsAndConditionsPage());
+
+            case PrivacyPolicyPage.routeName:
+            return createRoute( const PrivacyPolicyPage());
 
           default:
             return createRoute(const Welcome());

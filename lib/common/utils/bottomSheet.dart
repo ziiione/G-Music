@@ -1,9 +1,17 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:g_application/common/Provider/SongProvider.dart';
 import 'package:g_application/common/Provider/playlistProvider.dart';
+import 'package:g_application/common/utils/screen/Track_cutting.dart';
+import 'package:lecle_flutter_absolute_path/lecle_flutter_absolute_path.dart';
+import 'package:metadata_god/metadata_god.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:uri_to_file/uri_to_file.dart';
 
+import 'channel/operation.dart';
 import 'popup.dart';
 
 //showing the bottom sheet for the song for the song playing option
@@ -27,7 +35,7 @@ void buttomsheet(
             //  color: Colors.transparent,
             width: double.infinity,
             margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
-            height: MediaQuery.of(context).size.height * 0.53,
+            height: MediaQuery.of(context).size.height * 0.6,
             child: Column(
               children: [
                 Row(
@@ -117,19 +125,66 @@ void buttomsheet(
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
+                ListTile(
+  onTap: () async {
+            try {
+              final songUri = Provider.of<SongProvider>(context, listen: false).currentSong!.uri!.toString();
+              final filePath = await toFile(songUri);
+
+              // Check if the file exists
+              final file = File(filePath as String);
+              if (!await file.exists()) {
+                print('File does not exist at path: $filePath');
+                return;
+              }
+
+              print('Reading metadata from file: $filePath');
+              Metadata metadata = await MetadataGod.readMetadata(file: filePath.toString());
+              print('Current metadata: $metadata');
+
+              Metadata modifiedMetadata = Metadata(
+                title: 'New Title', // Replace with your new title
+                artist: metadata.artist,
+                album: metadata.album,
+                genre: metadata.genre,
+                year: metadata.year,
+                trackNumber: metadata.trackNumber,
+                discNumber: metadata.discNumber,
+                albumArtist: metadata.albumArtist,
+                // Add other metadata fields if necessary
+              );
+
+              print('Writing new metadata to file: $filePath');
+              await MetadataGod.writeMetadata(file: filePath.toString(), metadata: modifiedMetadata);
+              print('Metadata successfully written');
+            } catch (e, stackTrace) {
+              print('The error message is: $e');
+              print('Stack trace: $stackTrace');
+            }
+          },
+
+  leading: const Icon(
+    Icons.edit,
+    color: Colors.white,
+  ),
+  title: const Text(
+    'Rename',
+    style: TextStyle(color: Colors.white),
+  ),
+      ),
                 
                 ListTile(
                   onTap: () async {
                     Navigator.pop(context);
                   
-                    // provider.stop_Song();
-                    // //code to cut the track
-                    // final filePath =
-                    //     await LecleFlutterAbsolutePath.getAbsolutePath(
-                    //         uri: provider.currentSong.uri.toString());
+                    Provider.of<SongProvider>(context,listen: false).stop_Song();
+                    //code to cut the track
+                    final filePath =
+                        await LecleFlutterAbsolutePath.getAbsolutePath(
+                            uri: Provider.of<SongProvider>(context,listen: false).currentSong!.uri!.toString());
 
-                    // Navigator.pushNamed(context, AudioTrimmerView.routeName,
-                    //     arguments: {'file': File(filePath!)});
+                    Navigator.pushNamed(context, Track_cutter.routeName,
+                        arguments: {'file': File(filePath!),'song':currentSong});
                   },
                   leading: const Icon(
                     Icons.content_cut,
@@ -142,10 +197,9 @@ void buttomsheet(
                 ),
                 ListTile(
                   onTap: () {
-                    //code to set the song as ringtone
-
-                    // setRingtonePopup(context, provider.currentSong);
-                  },
+                    
+                setRingtonePopup(context,currentSong);   
+                     },
                   leading: const Icon(
                     Icons.vibration,
                     color: Colors.white,
@@ -157,10 +211,8 @@ void buttomsheet(
                 ),
                 ListTile(
                   onTap: () {
-                    //code for delete the song from the device
-
-                    // deleteSongPopup(context);
-                  },
+                   deleteSongPopup(context, currentSong);
+                   },
                   leading: const Icon(
                     Icons.delete,
                     color: Colors.white,
@@ -290,3 +342,5 @@ void buttomsheet(
           );
         });
   }
+
+  

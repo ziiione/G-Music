@@ -183,6 +183,7 @@ class Audioplay extends StatelessWidget {
                         slider_control(provider: provider),
                         time_play_value(provider: provider),
                         const pause_next_loop_suffle(),
+                     const   SleepTimerValue()
                       ],
                     ),
                   ],

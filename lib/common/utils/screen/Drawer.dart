@@ -2,8 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:g_application/common/utils/screen/Equalizer.dart';
+import 'package:g_application/common/utils/screen/Sleep.dart';
 import 'package:g_application/common/widget/snackbar.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+import 'About.dart';
+import 'SettingPage.dart';
 
 
 class DrawerSection extends StatelessWidget {
@@ -44,6 +48,8 @@ class DrawerSection extends StatelessWidget {
             icon: const Icon(Icons.timer, color: Colors.white),
             onTap: () {
               Navigator.pop(context);
+              Navigator.pushNamed(context, SleepTimerScreen.routeName);
+              
             },
           ),
           ListTileItem(
@@ -80,13 +86,16 @@ class DrawerSection extends StatelessWidget {
             icon: const Icon(Icons.info_outline, color: Colors.white),
             onTap: () {
               Navigator.pop(context);
+              Navigator.pushNamed(context, AboutPage.routeName);
             },
           ),
           ListTileItem(
             text: 'Settings',
             icon: const Icon(Icons.settings, color: Colors.white),
             onTap: () {
-              openAppSettings();
+              // openAppSettings();
+              Navigator.pop(context);
+              Navigator.pushNamed(context, SettingsPage.routeName);
             },
           )
         ],

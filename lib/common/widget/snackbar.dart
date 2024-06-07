@@ -7,7 +7,7 @@ void showSnackBar(BuildContext context, String message) {
       behavior: SnackBarBehavior.floating,
       width: null, // This makes the SnackBar to take the width of its content
       content: Text(message),
-      duration: const Duration(seconds: 1),
+      duration: const Duration(seconds: 2),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
       ),
@@ -15,7 +15,7 @@ void showSnackBar(BuildContext context, String message) {
       backgroundColor: Colors.black,
       action: SnackBarAction(
         label: 'Close',
-        textColor: Colors.white,
+        textColor: Colors.red,
         onPressed: () {
           scaffoldMessenger.hideCurrentSnackBar();
         },

@@ -16,9 +16,16 @@ AppBar appBarBuilder(BuildContext context, PageController pageController, TabCon
       actions: [IconButton(onPressed: (){
 
       Navigator.pushNamed(context, SearchScreen.routeName);
+
+
       },
       
-       icon: Icon(Icons.search,color: Colors.white.withOpacity(0.7),size: getHeight(context)*0.035,))],
+      
+       icon: Icon(Icons.search,color: Colors.white.withOpacity(0.7),size: getHeight(context)*0.035,)),
+       IconButton(onPressed: (){
+        
+       }, icon: Icon(Icons.refresh,color: Colors.white.withOpacity(0.7),size: getHeight(context)*0.035,)),
+       ],
         title: text16Normal(text: 'Scanning...', color: Colors.white),
         backgroundColor: Colors.black,
         bottom: PreferredSize(
